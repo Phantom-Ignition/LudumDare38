@@ -80,6 +80,8 @@ namespace LudumDare38.Managers
             _rand = new Random();
             _spawnInterval = 1500.0f;
 
+            _currentSpawnInterval = 1500.0f; // TODO REMOVE THIS
+
             CreateSpawnRules();
             InitEnemiesCount();
         }
@@ -95,6 +97,11 @@ namespace LudumDare38.Managers
                     {
                         Type = EnemyType.Kamikaze,
                         Position = new Vector2(virtualSize.X, virtualSize.Y / 4)
+                    },
+                    new  EnemyModel
+                    {
+                        Type = EnemyType.Shooter,
+                        Position = new Vector2(0, virtualSize.Y / 4)
                     }
                 },
                 // Wave #2

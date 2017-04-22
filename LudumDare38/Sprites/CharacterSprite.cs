@@ -338,7 +338,7 @@ namespace LudumDare38.Sprites
         public void DrawColliders(SpriteBatch spriteBatch)
         {
             var blockColider = GetCurrentFramesList().Collider;
-            spriteBatch.Draw(GetColliderTexture(blockColider), blockColider.BoundingBox, Color.White * 0.5f);
+            spriteBatch.Draw(GetColliderTexture(blockColider), destinationRectangle: blockColider.BoundingBox, color: Color.White * 0.5f, rotation: Rotation);
 
             foreach (var collider in GetCurrentFramesList().Frames[CurrentFrame].AttackColliders)
                 spriteBatch.Draw(GetColliderTexture(collider), collider.BoundingBox, Color.White * 0.5f);

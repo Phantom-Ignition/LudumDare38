@@ -15,8 +15,9 @@ namespace LudumDare38.Managers
         //--------------------------------------------------
         // Public variables
 
-        public Vector2 WindowSize = new Vector2(540, 540);
-        public Vector2 VirtualSize = new Vector2(360, 360);
+        //public Vector2 WindowSize = new Vector2(540, 540);
+        public Vector2 WindowSize = new Vector2(500, 500);
+        public Vector2 VirtualSize = new Vector2(500, 500);
         public GraphicsDevice GraphicsDevice;
         public SpriteBatch SpriteBatch;
         public ViewportAdapter ViewportAdapter { get { return GameMain.ViewportAdapter; } }

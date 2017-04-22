@@ -13,6 +13,7 @@ using LudumDare38.Objects;
 using Microsoft.Xna.Framework.Input;
 using LudumDare38.Objects.Guns;
 using LudumDare38.Characters;
+using LudumDare38.Helpers;
 
 namespace LudumDare38.Scenes
 {
@@ -44,6 +45,7 @@ namespace LudumDare38.Scenes
         // Enemies
 
         private List<EnemyBase> _enemies;
+        private List<EnemyBase> _enemiesToRemove;
 
         //--------------------------------------------------
         // Rotation
@@ -96,6 +98,7 @@ namespace LudumDare38.Scenes
         private void InitializeEnemies()
         {
             _enemies = new List<EnemyBase>();
+            _enemiesToRemove = new List<EnemyBase>();
         }
 
         private void InitializeSpawnManager()
@@ -131,9 +134,6 @@ namespace LudumDare38.Scenes
                 }
             }
 
-            // Update the enemies
-            _enemies.ForEach(enemy => enemy.Update(gameTime));
-
             // Update the projectiles
             foreach (var projectile in _projectiles)
             {
@@ -143,18 +143,51 @@ namespace LudumDare38.Scenes
                     _projectilesToRemove.Add(projectile);
             }
 
-            // Update the enemy spawn manager
-            UpdateEnemiesSpawn(gameTime);
-
             // Clear the projectiles
             _projectilesToRemove.ForEach(projectile => _projectiles.Remove(projectile));
             _projectilesToRemove.Clear();
+            
+            // Update the enemies
+            foreach (var enemy in _enemies)
+            {
+                enemy.Update(gameTime);
+                if (enemy.RequestErase)
+                {
+                    _enemiesToRemove.Add(enemy);
+                }
+                if (!enemy.Dying && enemy.Alive && enemy.ImmunityTime <= 0.0f)
+                {
+                    var rectEnemy = enemy.BoundingBox;
+                    var dataEnemy = enemy.SpriteTextureData;
+                    foreach (var projectile in _projectiles)
+                    {
+                        if (projectile.RequestErase) continue;
+                        var textureProjectile = projectile.BoundingBox;
+                        var dataProjectile = projectile.SpriteTextureData;
+                        Vector2 collisionPoint;
+                        if (CollisionHelper.IntersectPixels(rectEnemy, dataEnemy, textureProjectile, dataProjectile, out collisionPoint))
+                        {
+                            enemy.GetShot(1, collisionPoint, projectile.Rotation);
+                            projectile.Destroy();
+                        }
+                    }
+                }
+            }
+
+            // Clear the enemies
+            _enemiesToRemove.ForEach(enemy => _enemies.Remove(enemy));
+            _enemiesToRemove.Clear();
+
+            // Update the enemy spawn manager
+            UpdateEnemiesSpawn(gameTime);
 
             // Update the rotation
             if (InputManager.Instace.KeyDown(Keys.Left))
                 _rotation -= 0.03f;
             if (InputManager.Instace.KeyDown(Keys.Right))
                 _rotation += 0.03f;
+            if (InputManager.Instace.KeyPressed(Keys.P))
+                _enemies[0].aa();
         }
 
         private void UpdateEnemiesSpawn(GameTime gameTime)
@@ -168,14 +201,17 @@ namespace LudumDare38.Scenes
                 {
                     case EnemyType.Kamikaze:
                         enemy = new Kamikaze(ImageManager.LoadEnemy("Kamikaze"));
-                        enemy.Position = model.Position;
-                        var velocity = enemy.Velocity;
-                        var angle = new Vector2(velocity.X * enemy.Sprite.TextureRegion.Width / 2, velocity.Y * enemy.Sprite.TextureRegion.Height / 2);
-                        enemy.Position -= angle;
+                        break;
+                    case EnemyType.Shooter:
+                        enemy = new Shooter(ImageManager.LoadEnemy("Shooter"));
                         break;
                 }
                 if (enemy != null)
                 {
+                    enemy.Position = model.Position;
+                    var velocity = enemy.Velocity;
+                    var angle = new Vector2(velocity.X * enemy.Sprite.TextureRegion.Width / 2, velocity.Y * enemy.Sprite.TextureRegion.Height / 2);
+                    enemy.Position -= angle;
                     _enemies.Add(enemy);
                 }
             }

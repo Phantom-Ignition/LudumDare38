@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.Particles;
 using LudumDare38.Sprites;
 using Microsoft.Xna.Framework;
-using MonoGame.Extended.Particles;
 
 namespace LudumDare38.Characters
 {
-    class Kamikaze : EnemyBase
+    class Shooter : EnemyBase
     {
         protected override float InitialImmunityTime => 50.0f;
         protected override HslColor EnemyColor => new HslColor(317, 0.55f, 0.39f);
 
-        public Kamikaze(Texture2D texture) : base(texture)
+        public Shooter(Texture2D texture) : base(texture)
         {
-            _hp = 3;
+            _hp = 6;
         }
 
         protected override void CreateSprite(Texture2D texture)
@@ -23,10 +26,10 @@ namespace LudumDare38.Characters
             _sprite.Origin = new Vector2(47f, 18);
 
             _sprite.CreateFrameList("stand", 0);
-            _sprite.AddCollider("stand", new Rectangle(0, 0, 94, 36));
+            _sprite.AddCollider("stand", new Rectangle(0, 0, 114, 78));
             _sprite.AddFrames("stand", new List<Rectangle>()
             {
-                new Rectangle(0, 0, 94, 36)
+                new Rectangle(0, 0, 114, 78)
             });
         }
 

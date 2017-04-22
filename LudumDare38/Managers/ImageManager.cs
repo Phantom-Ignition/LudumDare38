@@ -31,7 +31,7 @@ namespace LudumDare38.Managers
             return LoadBitmap("imgs/guns/" + filename);
         }
 
-        public static Texture2D LoadProjecitile(string filename)
+        public static Texture2D LoadProjectile(string filename)
         {
             return LoadBitmap("imgs/projectiles/" + filename);
         }

@@ -4,6 +4,7 @@ using LudumDare38.Sprites;
 using LudumDare38.Managers;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Input;
 
 namespace LudumDare38.Objects
 {
@@ -30,6 +31,8 @@ namespace LudumDare38.Objects
 
         private CharacterSprite _sprite;
         public CharacterSprite Sprite => _sprite;
+        private Color[] _spriteTextureData;
+        public Color[] SpriteTextureData => _spriteTextureData;
 
         //--------------------------------------------------
         // Position
@@ -42,6 +45,8 @@ namespace LudumDare38.Objects
         // Rotation & Speed
 
         private float _rotation;
+        public float Rotation => _rotation;
+
         private float _speed;
 
         //--------------------------------------------------
@@ -80,7 +85,7 @@ namespace LudumDare38.Objects
         {
             get
             {
-                return new Rectangle((int)_position.X, (int)_position.Y, _sprite.TextureRegion.Width, _sprite.TextureRegion.Height);
+                return new Rectangle((int)_position.X, (int)_position.Y, _sprite.GetColliderWidth(), _sprite.GetColliderHeight());
             }
         }
 
@@ -96,22 +101,30 @@ namespace LudumDare38.Objects
             _subject = subject;
             _rand = new Random();
             CreateSprite(type);
+            CreateSpriteTextureData();
         }
 
         private void CreateSprite(ProjectileType type)
         {
             var textureName = type.ToString();
-            var texture = ImageManager.LoadProjecitile(textureName);
+            var texture = ImageManager.LoadProjectile(textureName);
             _sprite = new CharacterSprite(texture);
             _sprite.Rotation = _rotation;
 
             _sprite.CreateFrameList("stand", 200);
-            _sprite.AddCollider("stand", new Rectangle(0, 0, 20, 20));
+            _sprite.AddCollider("stand", new Rectangle(0, 0, 20, 10));
             _sprite.AddFrames("stand", new List<Rectangle>()
             {
-                new Rectangle(0, 0, 20, 20),
-                new Rectangle(20, 0, 20, 20)
+                new Rectangle(0, 0, 20, 10),
+                new Rectangle(20, 0, 20, 10)
             });
+        }
+
+        private void CreateSpriteTextureData()
+        {
+            var texture = _sprite.TextureRegion.Texture;
+            _spriteTextureData = new Color[texture.Width * texture.Height];
+            texture.GetData(_spriteTextureData);
         }
 
         public void Update(GameTime gameTime)
@@ -120,9 +133,7 @@ namespace LudumDare38.Objects
             MoveProjectile(gameTime);
             _sprite.Position = _position;
             _sprite.Update(gameTime);
-
-            var tileX = (int)(_position.X / MapManager.Instance.TileSize.X);
-            var tileY = (int)(_position.Y / MapManager.Instance.TileSize.Y);
+            
             var bounds = SceneManager.Instance.VirtualSize;
             if (_position.X >= bounds.X || _position.Y >= bounds.Y ||
                 Position.X + Sprite.TextureRegion.Width <= 0 || Position.Y + Sprite.TextureRegion.Height <= 0)
