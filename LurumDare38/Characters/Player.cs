@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using LurumDare38.Managers;
-using LurumDare38.Sprites;
+using LudumDare38.Managers;
+using LudumDare38.Sprites;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace LurumDare38.Characters
+namespace LudumDare38.Characters
 {
     class Player : CharacterBase
     {

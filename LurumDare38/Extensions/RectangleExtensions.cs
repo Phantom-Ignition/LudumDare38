@@ -2,7 +2,7 @@
 
 using Microsoft.Xna.Framework;
 
-namespace LurumDare38.Extensions
+namespace LudumDare38.Extensions
 {
     /// <summary>
     /// Taken from:

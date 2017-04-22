@@ -5,9 +5,9 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.ViewportAdapters;
-using LurumDare38.Managers;
+using LudumDare38.Managers;
 
-namespace LurumDare38.Scenes
+namespace LudumDare38.Scenes
 {
     public abstract class SceneBase
     {

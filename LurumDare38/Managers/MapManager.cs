@@ -6,10 +6,10 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.Maps.Tiled;
-using LurumDare38.Characters;
-using LurumDare38.Extensions;
+using LudumDare38.Characters;
+using LudumDare38.Extensions;
 
-namespace LurumDare38.Managers
+namespace LudumDare38.Managers
 {
     class MapManager
     {

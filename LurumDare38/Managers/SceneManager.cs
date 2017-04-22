@@ -1,6 +1,6 @@
 ﻿using System;
 
-using LurumDare38.Scenes;
+using LudumDare38.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -8,15 +8,15 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Sprites;
 using MonoGame.Extended.ViewportAdapters;
 
-namespace LurumDare38.Managers
+namespace LudumDare38.Managers
 {
     class SceneManager
     {
         //--------------------------------------------------
         // Public variables
 
-        public Vector2 WindowSize = new Vector2(720, 480);
-        public Vector2 VirtualSize = new Vector2(720, 480);
+        public Vector2 WindowSize = new Vector2(540, 540);
+        public Vector2 VirtualSize = new Vector2(360, 360);
         public GraphicsDevice GraphicsDevice;
         public SpriteBatch SpriteBatch;
         public ViewportAdapter ViewportAdapter { get { return GameMain.ViewportAdapter; } }
@@ -68,7 +68,7 @@ namespace LurumDare38.Managers
 
         private SceneManager()
         {
-            _currentScene = new SceneMap();
+            _currentScene = new ScenePlanet();
         }
 
         public void RequestExit()
@@ -120,7 +120,7 @@ namespace LurumDare38.Managers
         public void ChangeScene(string newScene)
         {
             if (_isTransitioning) return;
-            _newScene = (SceneBase)Activator.CreateInstance(Type.GetType("LurumDare38.Scenes." + newScene));
+            _newScene = (SceneBase)Activator.CreateInstance(Type.GetType("LudumDare38.Scenes." + newScene));
             InitializeTransition();
         }
 

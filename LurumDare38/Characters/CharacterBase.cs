@@ -2,10 +2,10 @@
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using LurumDare38.Objects;
-using LurumDare38.Sprites;
+using LudumDare38.Objects;
+using LudumDare38.Sprites;
 
-namespace LurumDare38.Characters
+namespace LudumDare38.Characters
 {
     public abstract class CharacterBase : PhysicalObject
     {

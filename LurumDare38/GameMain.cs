@@ -1,10 +1,10 @@
-﻿using LurumDare38.Managers;
+﻿using LudumDare38.Managers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.ViewportAdapters;
 
-namespace LurumDare38
+namespace LudumDare38
 {
     /// <summary>
     /// This is the main type for your game.

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace LurumDare38.Managers
+namespace LudumDare38.Managers
 {
     public static class ImageManager
     {
@@ -16,22 +16,37 @@ namespace LurumDare38.Managers
 
         //----------------------//------------------------//
 
-        public static Texture2D loadSystem(string filename)
+        public static Texture2D Load(string filename)
         {
-            return loadBitmap("imgs/system/" + filename);
+            return LoadBitmap("imgs/" + filename);
         }
 
-        public static Texture2D loadCharacter(string filename)
+        public static Texture2D LoadHud(string filename)
         {
-            return loadBitmap("imgs/characters/" + filename);
+            return LoadBitmap("imgs/hud/" + filename);
         }
 
-        public static Texture2D loadScene(string scene, string filename)
+        public static Texture2D LoadGun(string filename)
         {
-            return loadBitmap(String.Format("imgs/scenes/{0}/{1}", scene, filename));
+            return LoadBitmap("imgs/guns/" + filename);
         }
 
-        public static Texture2D loadBitmap(string filename)
+        public static Texture2D LoadSystem(string filename)
+        {
+            return LoadBitmap("imgs/system/" + filename);
+        }
+
+        public static Texture2D LoadCharacter(string filename)
+        {
+            return LoadBitmap("imgs/characters/" + filename);
+        }
+
+        public static Texture2D LoadScene(string scene, string filename)
+        {
+            return LoadBitmap(String.Format("imgs/scenes/{0}/{1}", scene, filename));
+        }
+
+        public static Texture2D LoadBitmap(string filename)
         {
             if (!_cache.ContainsKey(filename))
             {

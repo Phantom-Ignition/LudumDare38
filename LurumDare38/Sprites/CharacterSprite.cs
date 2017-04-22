@@ -3,10 +3,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Sprites;
-using LurumDare38.Managers;
+using LudumDare38.Managers;
 using System.Diagnostics;
 
-namespace LurumDare38.Sprites
+namespace LudumDare38.Sprites
 {
     //--------------------------------------------------
     // Sprite direction

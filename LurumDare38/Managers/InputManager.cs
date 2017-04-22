@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Input;
 
-namespace LurumDare38.Managers
+namespace LudumDare38.Managers
 {
     public class InputManager
     {

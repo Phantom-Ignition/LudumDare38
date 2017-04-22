@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LurumDare38
+namespace LudumDare38
 {
     /// <summary>
     /// The main class.

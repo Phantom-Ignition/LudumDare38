@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace LurumDare38.Sprites
+namespace LudumDare38.Sprites
 {
     public class FramesList
     {

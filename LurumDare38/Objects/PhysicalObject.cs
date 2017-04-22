@@ -1,8 +1,8 @@
-﻿using LurumDare38.Managers;
+﻿using LudumDare38.Managers;
 using Microsoft.Xna.Framework;
 using System;
 
-namespace LurumDare38.Objects
+namespace LudumDare38.Objects
 {
     public class PhysicalObject
     {

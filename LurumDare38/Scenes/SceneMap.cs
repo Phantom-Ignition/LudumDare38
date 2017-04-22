@@ -1,11 +1,11 @@
 ﻿using System;
 
-using LurumDare38.Managers;
+using LudumDare38.Managers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.ViewportAdapters;
-using LurumDare38.Characters;
+using LudumDare38.Characters;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Particles;
 using MonoGame.Extended.Particles.Profiles;
@@ -13,7 +13,7 @@ using MonoGame.Extended.Particles.Modifiers;
 using System.Collections.Generic;
 using MonoGame.Extended.TextureAtlases;
 
-namespace LurumDare38.Scenes
+namespace LudumDare38.Scenes
 {
     class SceneMap : SceneBase
     {
@@ -64,7 +64,7 @@ namespace LurumDare38.Scenes
             _camera = new Camera2D(SceneManager.Instance.ViewportAdapter);
 
             // Player init
-            _player = new Player(ImageManager.loadCharacter("Player"));
+            _player = new Player(ImageManager.LoadCharacter("Player"));
 
             // Particles init
             var particleTexture = new Texture2D(SceneManager.Instance.GraphicsDevice, 1, 1);
