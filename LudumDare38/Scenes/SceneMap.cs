@@ -64,7 +64,7 @@ namespace LudumDare38.Scenes
             _camera = new Camera2D(SceneManager.Instance.ViewportAdapter);
 
             // Player init
-            _player = new Player(ImageManager.LoadCharacter("Player"));
+            _player = new Player(ImageManager.LoadBitmap("Player"));
 
             // Particles init
             var particleTexture = new Texture2D(SceneManager.Instance.GraphicsDevice, 1, 1);

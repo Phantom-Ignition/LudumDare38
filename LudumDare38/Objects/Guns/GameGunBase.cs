@@ -26,6 +26,11 @@ namespace LudumDare38.Objects.Guns
         protected float _currentCooldown;
         public float CurrentCooldown => _currentCooldown;
 
+        //--------------------------------------------------
+        // Static
+
+        public bool Static { get; set; }
+
         //----------------------//------------------------//
 
         public GameGunBase(int orbitLevel, GunType gunType, float angle)
@@ -38,21 +43,22 @@ namespace LudumDare38.Objects.Guns
         }
 
         protected abstract void CreateSprite();
-        public virtual GameProjectile Shot()
+        public virtual bool Shot(out GameProjectile projectile)
         {
+            projectile = null;
             _currentCooldown = _cooldown;
-            return null;
+            return false;
         }
 
         public virtual void Update(GameTime gameTime, float rotation, float floating)
         {
-            var floatVector = (float)Math.Sin(floating) * 7 * Vector2.UnitY;
+            var floatingMultiplier = (_orbitLevel) * 1.1f;
             var center = SceneManager.Instance.VirtualSize / 2;
             rotation = (3 - _orbitLevel) * rotation;
             rotation += _angle;
             var orbitDistance = 17 + _orbitLevel * 30;
             var position = center + new Vector2(orbitDistance * (float)Math.Cos(rotation), orbitDistance * (float)Math.Sin(rotation)) +
-                floating * Vector2.UnitY;
+                floating * floatingMultiplier * Vector2.UnitY;
 
             _sprite.Rotation = rotation + (float)Math.PI / 2;
             _sprite.Position = position;

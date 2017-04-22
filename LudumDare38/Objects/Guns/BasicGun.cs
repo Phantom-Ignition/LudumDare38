@@ -3,10 +3,6 @@ using LudumDare38.Sprites;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace LudumDare38.Objects.Guns
 {
@@ -49,13 +45,14 @@ namespace LudumDare38.Objects.Guns
             }
         }
 
-        public override GameProjectile Shot()
+        public override bool Shot(out GameProjectile projectile)
         {
-            base.Shot();
+            base.Shot(out projectile);
             _sprite.SetFrameList("shot");
             var rotation = _sprite.Rotation - (float)Math.PI / 2;
             var position = _sprite.Position - new Vector2(-(float)Math.Sin(rotation) * 10f, (float)Math.Cos(rotation) * 10f);
-            return new GameProjectile(ProjectileType.BasicProjectile, position, rotation, 5, 1, ProjectileSubject.FromPlayer);
+            projectile = new GameProjectile(ProjectileType.BasicProjectile, position, rotation, 5, 1, ProjectileSubject.FromPlayer);
+            return true;
         }
     }
 }

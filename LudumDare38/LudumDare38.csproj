@@ -43,9 +43,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Characters\CharacterBase.cs" />
+    <Compile Include="Characters\EnemyBase.cs" />
+    <Compile Include="Characters\Kamikaze.cs" />
     <Compile Include="Characters\Player.cs" />
     <Compile Include="Extensions\RectangleExtensions.cs" />
     <Compile Include="GameMain.cs" />
+    <Compile Include="Managers\EnemiesSpawnManager.cs" />
     <Compile Include="Managers\ImageManager.cs" />
     <Compile Include="Managers\InputManager.cs" />
     <Compile Include="Managers\MapManager.cs" />
@@ -55,6 +58,8 @@
     <Compile Include="Objects\Guns\GameGunBase.cs" />
     <Compile Include="Objects\GameHud.cs" />
     <Compile Include="Objects\GamePlanet.cs" />
+    <Compile Include="Objects\Guns\Laser.cs" />
+    <Compile Include="Objects\Guns\Shield.cs" />
     <Compile Include="Objects\PhysicalObject.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

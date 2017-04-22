@@ -12,6 +12,7 @@ using MonoGame.Extended.Maps.Tiled;
 using LudumDare38.Objects;
 using Microsoft.Xna.Framework.Input;
 using LudumDare38.Objects.Guns;
+using LudumDare38.Characters;
 
 namespace LudumDare38.Scenes
 {
@@ -40,14 +41,19 @@ namespace LudumDare38.Scenes
         private List<GameProjectile> _projectiles;
 
         //--------------------------------------------------
+        // Enemies
+
+        private List<EnemyBase> _enemies;
+
+        //--------------------------------------------------
         // Rotation
 
         private float _rotation;
 
         //--------------------------------------------------
-        // Floating
+        // Enemies Spawn Manager
 
-        private float _floatingRotation;
+        private EnemiesSpawnManager _enemiesSpawnManager;
 
         //----------------------//------------------------//
 
@@ -59,7 +65,9 @@ namespace LudumDare38.Scenes
 
             CreatePlanet();
             CreateGuns();
-            InitProjectiles();
+            InitializeProjectiles();
+            InitializeEnemies();
+            InitializeSpawnManager();
         }
 
         private void CreatePlanet()
@@ -73,21 +81,27 @@ namespace LudumDare38.Scenes
         {
             _guns = new List<GameGunBase>();
             _guns.Add(new BasicGun(1, GunType.Basic, 0.0f));
-            _guns.Add(new BasicGun(1, GunType.Basic, (float)Math.PI));
-            _guns.Add(new BasicGun(2, GunType.Basic, (float)Math.PI * 0.5f));
-            /*
-            _guns.Add(new GameGunBase(1, GunType.Basic, 0.0f));
-            _guns.Add(new GameGunBase(1, GunType.Basic, (float)Math.PI));
-            _guns.Add(new GameGunBase(2, GunType.Basic, 0.0f));
-            */
+            _guns.Add(new Laser(1, GunType.Basic, (float)Math.PI));
+            _guns.Add(new Shield(2, GunType.Basic, (float)Math.PI * 0.5f));
         }
 
-        private void InitProjectiles()
+        private void InitializeProjectiles()
         {
             _projectilesToRemove = new List<GameProjectile>();
             _projectiles = new List<GameProjectile>();
             _projectilesColliderTexture = new Texture2D(SceneManager.Instance.GraphicsDevice, 1, 1);
             _projectilesColliderTexture.SetData(new Color[] { Color.Orange });
+        }
+
+        private void InitializeEnemies()
+        {
+            _enemies = new List<EnemyBase>();
+        }
+
+        private void InitializeSpawnManager()
+        {
+            _enemiesSpawnManager = new EnemiesSpawnManager();
+            _enemiesSpawnManager.Start();
         }
 
         public override void Update(GameTime gameTime)
@@ -106,13 +120,19 @@ namespace LudumDare38.Scenes
             {
                 foreach (var gun in _guns)
                 {
-                    if (gun.CurrentCooldown == 0.0f)
+                    if (!gun.Static && gun.CurrentCooldown == 0.0f)
                     {
-                        var newProjectile = gun.Shot();
-                        _projectiles.Add(newProjectile);
+                        GameProjectile newProjectile;
+                        if (gun.Shot(out newProjectile))
+                        {
+                            _projectiles.Add(newProjectile);
+                        }
                     }
                 }
             }
+
+            // Update the enemies
+            _enemies.ForEach(enemy => enemy.Update(gameTime));
 
             // Update the projectiles
             foreach (var projectile in _projectiles)
@@ -123,6 +143,9 @@ namespace LudumDare38.Scenes
                     _projectilesToRemove.Add(projectile);
             }
 
+            // Update the enemy spawn manager
+            UpdateEnemiesSpawn(gameTime);
+
             // Clear the projectiles
             _projectilesToRemove.ForEach(projectile => _projectiles.Remove(projectile));
             _projectilesToRemove.Clear();
@@ -132,6 +155,30 @@ namespace LudumDare38.Scenes
                 _rotation -= 0.03f;
             if (InputManager.Instace.KeyDown(Keys.Right))
                 _rotation += 0.03f;
+        }
+
+        private void UpdateEnemiesSpawn(GameTime gameTime)
+        {
+            _enemiesSpawnManager.Update(gameTime);
+            while (_enemiesSpawnManager.Queue.Count > 0)
+            {
+                var model = _enemiesSpawnManager.ShiftModelFromQueue();
+                EnemyBase enemy = null;
+                switch (model.Type)
+                {
+                    case EnemyType.Kamikaze:
+                        enemy = new Kamikaze(ImageManager.LoadEnemy("Kamikaze"));
+                        enemy.Position = model.Position;
+                        var velocity = enemy.Velocity;
+                        var angle = new Vector2(velocity.X * enemy.Sprite.TextureRegion.Width / 2, velocity.Y * enemy.Sprite.TextureRegion.Height / 2);
+                        enemy.Position -= angle;
+                        break;
+                }
+                if (enemy != null)
+                {
+                    _enemies.Add(enemy);
+                }
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter)
@@ -147,11 +194,13 @@ namespace LudumDare38.Scenes
             // Draw the guns
             _guns.ForEach(gun => gun.Draw(spriteBatch));
 
+            // Draw the enemies
+            _enemies.ForEach(enemy => enemy.Draw(spriteBatch));
+
             // Draw the projectiles
             _projectiles.ForEach(projectile => projectile.Sprite.Draw(spriteBatch, projectile.Position));
 
             spriteBatch.End();
-
 
             base.Draw(spriteBatch, viewportAdapter);
         }

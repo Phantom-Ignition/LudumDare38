@@ -36,9 +36,9 @@ namespace LudumDare38.Managers
             return LoadBitmap("imgs/projectiles/" + filename);
         }
 
-        public static Texture2D LoadCharacter(string filename)
+        public static Texture2D LoadEnemy(string filename)
         {
-            return LoadBitmap("imgs/characters/" + filename);
+            return LoadBitmap("imgs/enemies/" + filename);
         }
 
         public static Texture2D LoadScene(string scene, string filename)

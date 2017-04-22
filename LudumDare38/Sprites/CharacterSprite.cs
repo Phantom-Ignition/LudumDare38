@@ -111,6 +111,13 @@ namespace LudumDare38.Sprites
             _framesList[name].Reset = reset;
         }
 
+        public void ResetCurrentFrameList()
+        {
+            _currentFrame = 0;
+            _looped = false;
+            _delayTick = 0;
+        }
+
         public void AddFrames(string name, List<Rectangle> frames, int[] offsetX, int[] offsetY)
         {
             for (var i = 0; i < frames.Count; i++)
