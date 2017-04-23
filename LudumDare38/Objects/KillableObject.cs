@@ -33,6 +33,8 @@ namespace LudumDare38.Objects
         public bool Dying => _dying;
 
         protected float _dyingAlpha;
+        protected float _dyingTimer;
+        public float DyingAlpha => _dyingAlpha;
 
         //--------------------------------------------------
         // Request erase
@@ -49,8 +51,9 @@ namespace LudumDare38.Objects
 
         //----------------------//------------------------//
 
-        public KillableObject()
+        public KillableObject(int hp = 0)
         {
+            _hp = hp;
             _dyingAlpha = 1.0f;
             _flashEffect = EffectManager.Load("FlashEffect");
             _flashEffect.Parameters["Progress"].SetValue(_flashProgress);
@@ -58,6 +61,7 @@ namespace LudumDare38.Objects
 
         public virtual void GetDamaged(int damage)
         {
+            if (_hp == 0) return;
             _flashing = true;
             _flashProgress = 1.0f;
             _hp = Math.Max(_hp - damage, 0);
@@ -68,7 +72,7 @@ namespace LudumDare38.Objects
             }
         }
 
-        protected virtual void OnDeath()
+        public virtual void OnDeath()
         {
             _dying = true;
             _dyingAlpha = 1.0f;
@@ -94,7 +98,8 @@ namespace LudumDare38.Objects
             }
             if (_dying)
             {
-                _dyingAlpha -= deltaTime / 500;
+                _dyingTimer += deltaTime;
+                _dyingAlpha -= deltaTime / 300;
                 // -1.5f because we wan't to give time the particles to fade out
                 if (_dyingAlpha <= -1.5f)
                 {
@@ -103,7 +108,7 @@ namespace LudumDare38.Objects
             }
         }
 
-        protected void PreDraw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter)
+        public void PreDraw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter)
         {
             if (_flashing)
             {

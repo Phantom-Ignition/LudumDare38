@@ -7,7 +7,7 @@ using MonoGame.Extended.Particles;
 
 namespace LudumDare38.Characters
 {
-    class Kamikaze : EnemyBase
+    class Kamikaze : EnemyBase, ISuicidable
     {
         public override EnemyType Type => EnemyType.Kamikaze;
         protected override float InitialImmunityTime => 50.0f;
@@ -50,6 +50,11 @@ namespace LudumDare38.Characters
             }
 
             _sprite.Position = _position;
+        }
+
+        public void Explode()
+        {
+            GetDamaged(999);
         }
     }
 }

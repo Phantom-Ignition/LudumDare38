@@ -3,6 +3,7 @@ using LudumDare38.Sprites;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Sprites;
+using MonoGame.Extended.ViewportAdapters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -140,10 +141,12 @@ namespace LudumDare38.Objects.Guns
             return false;
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter)
         {
+            PreDraw(spriteBatch, viewportAdapter);
             _laser.Sprite.Draw(spriteBatch, _laser.Sprite.Position);
-            base.Draw(spriteBatch);
+            spriteBatch.End();
+            base.Draw(spriteBatch, viewportAdapter);
         }
     }
 }

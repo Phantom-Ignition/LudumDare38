@@ -2,6 +2,7 @@
 using LudumDare38.Sprites;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.ViewportAdapters;
 using System;
 
 namespace LudumDare38.Objects.Guns
@@ -21,6 +22,7 @@ namespace LudumDare38.Objects.Guns
         protected int _orbitLevel;
         protected float _angle;
         protected CharacterSprite _sprite;
+        public CharacterSprite Sprite => _sprite;
         
         //--------------------------------------------------
         // Cooldown
@@ -75,9 +77,16 @@ namespace LudumDare38.Objects.Guns
             }
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch)
+        public virtual void PreDraw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter)
         {
+            spriteBatch.Begin(transformMatrix: viewportAdapter.GetScaleMatrix(), samplerState: SamplerState.PointClamp);
+        }
+
+        public virtual void Draw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter)
+        {
+            PreDraw(spriteBatch, viewportAdapter);
             _sprite.Draw(spriteBatch, _sprite.Position);
+            spriteBatch.End();
         }
     }
 }

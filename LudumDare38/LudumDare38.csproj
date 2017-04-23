@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="Characters\CharacterBase.cs" />
     <Compile Include="Characters\EnemyBase.cs" />
+    <Compile Include="Characters\ISuicidable.cs" />
     <Compile Include="Characters\Kamikaze.cs" />
     <Compile Include="Characters\Player.cs" />
     <Compile Include="Characters\Shooter.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="Objects\Guns\LaserGun.cs" />
     <Compile Include="Objects\Guns\Shield.cs" />
     <Compile Include="Objects\ICollidableObject.cs" />
+    <Compile Include="Objects\IKillableObject.cs" />
     <Compile Include="Objects\KillableObject.cs" />
     <Compile Include="Objects\PhysicalObject.cs" />
     <Compile Include="Program.cs" />

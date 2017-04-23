@@ -33,10 +33,11 @@ namespace LudumDare38.Scenes
         // Guns
 
         private List<GameGunBase> _guns;
+        private List<GameGunBase> _gunsToRemove;
 
         //--------------------------------------------------
         // Projectiles
-        
+
         private Texture2D _projectilesColliderTexture;
         private List<GameProjectile> _projectilesToRemove;
         private List<GameProjectile> _projectiles;
@@ -85,6 +86,7 @@ namespace LudumDare38.Scenes
             _guns.Add(new BasicGun(1, GunType.Basic, 0.0f));
             _guns.Add(new LaserGun(1, GunType.LaserGun, (float)Math.PI));
             _guns.Add(new Shield(2, GunType.Shield, (float)Math.PI * 0.5f));
+            _gunsToRemove = new List<GameGunBase>();
         }
 
         private void InitializeProjectiles()
@@ -136,7 +138,19 @@ namespace LudumDare38.Scenes
                         }
                     }
                 }
+                if (gun.GunType == GunType.Shield)
+                {
+                    var shield = (Shield)gun;
+                    if (shield.RequestingErase)
+                    {
+                        _gunsToRemove.Add(gun);
+                    }
+                }
             }
+
+            // Clear the projectiles
+            _gunsToRemove.ForEach(gun => _guns.Remove(gun));
+            _gunsToRemove.Clear();
 
             if (InputManager.Instace.KeyPressed(Keys.S))
             {
@@ -176,7 +190,13 @@ namespace LudumDare38.Scenes
                         var shields = _guns.Where(gun => gun.GunType == GunType.Shield).ToArray();
                         foreach (var shield in shields)
                         {
-
+                            Vector2 collisionPoint;
+                            var cShield = (Shield)shield;
+                            if (cShield.Sprite.Alpha > 0.1f && CollisionHelper.IsColliding(cShield, projectile, out collisionPoint))
+                            {
+                                cShield.GetDamaged(1);
+                                projectile.Destroy();
+                            }
                         }
                     }
                 }
@@ -204,6 +224,24 @@ namespace LudumDare38.Scenes
                             var proj = shooter.ProjectilesQueued[0];
                             _projectiles.Add(proj);
                             shooter.ProjectilesQueued.Remove(proj);
+                        }
+                    }
+                    else
+                    {
+                        ISuicidable enemySuicidable = enemy as ISuicidable;
+                        if (enemySuicidable != null)
+                        {
+                            var shields = _guns.Where(gun => gun.GunType == GunType.Shield).ToArray();
+                            foreach (var shield in shields)
+                            {
+                                Vector2 collisionPoint;
+                                var cShield = (Shield)shield;
+                                if (cShield.Sprite.Alpha > 0.1f && CollisionHelper.IsColliding(cShield, enemy, out collisionPoint))
+                                {
+                                    cShield.GetDamaged(1);
+                                    enemySuicidable.Explode();
+                                }
+                            }
                         }
                     }
                     if (enemy.ImmunityTime <= 0.0f)
@@ -276,9 +314,7 @@ namespace LudumDare38.Scenes
             _planet.Draw(spriteBatch, viewportAdapter);
 
             // Draw the guns
-            spriteBatch.Begin(transformMatrix: viewportAdapter.GetScaleMatrix(), samplerState: SamplerState.PointClamp);
-            _guns.ForEach(gun => gun.Draw(spriteBatch));
-            spriteBatch.End();
+            _guns.ForEach(gun => gun.Draw(spriteBatch, viewportAdapter));
 
             // Draw the enemies
             _enemies.ForEach(enemy => enemy.Draw(spriteBatch, viewportAdapter));

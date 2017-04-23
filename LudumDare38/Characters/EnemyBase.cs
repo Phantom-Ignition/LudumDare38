@@ -121,7 +121,6 @@ namespace LudumDare38.Characters
                         },
                         Modifiers = new IModifier[]
                         {
-                            new LinearGravityModifier
                             new RotationModifier { RotationRate = 10.0f },
                             new OpacityFastFadeModifier()
                         }
@@ -168,7 +167,7 @@ namespace LudumDare38.Characters
             texture.GetData(_spriteTextureData);
         }
 
-        protected override void OnDeath()
+        public override void OnDeath()
         {
             base.OnDeath();
             _deathParticles.Trigger(_position);

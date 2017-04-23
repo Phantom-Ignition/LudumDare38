@@ -3,16 +3,20 @@ using LudumDare38.Sprites;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using LudumDare38.Helpers;
+using MonoGame.Extended.ViewportAdapters;
 
 namespace LudumDare38.Objects.Guns
 {
-    class Shield : GameGunBase, ICollidableObject
+    class Shield : GameGunBase, ICollidableObject, IKillableObject
     {
+        private KillableObject _killableObject;
+        public bool RequestingErase => _killableObject.RequestErase;
+
         public Shield(int orbitLevel, GunType gunType, float angle) : base(orbitLevel, gunType, angle)
         {
             Static = true;
+            _killableObject = new KillableObject(3);
         }
 
         protected override void CreateSprite()
@@ -44,6 +48,37 @@ namespace LudumDare38.Objects.Guns
                 new Rectangle(0, 30, 39, 15),
                 new Rectangle(39, 30, 39, 15)
             });
+        }
+
+        public void GetDamaged(int damage)
+        {
+            _killableObject.GetDamaged(damage);
+            switch (_killableObject.HP)
+            {
+                case 2:
+                    _sprite.SetFrameList("damaged_1");
+                    break;
+                case 1:
+                    _sprite.SetFrameList("damaged_2");
+                    break;
+            }
+        }
+
+        public void OnDeath()
+        {
+            _killableObject.OnDeath();
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            _killableObject.Update(gameTime);
+            _sprite.Alpha = _killableObject.DyingAlpha;
+        }
+
+        public override void Update(GameTime gameTime, float rotation, float floating)
+        {
+            base.Update(gameTime, rotation, floating);
+            Update(gameTime);
         }
 
         public Rectangle BoundingRectangle()
@@ -83,6 +118,11 @@ namespace LudumDare38.Objects.Guns
             return Matrix.CreateTranslation(new Vector3(-_sprite.Origin, 0.0f)) *
                         Matrix.CreateRotationZ(_sprite.Rotation) *
                         Matrix.CreateTranslation(new Vector3(_sprite.Position, 0.0f));
+        }
+
+        public override void PreDraw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter)
+        {
+            _killableObject.PreDraw(spriteBatch, viewportAdapter);
         }
     }
 }
