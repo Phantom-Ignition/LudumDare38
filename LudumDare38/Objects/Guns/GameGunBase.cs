@@ -2,7 +2,6 @@
 using LudumDare38.Sprites;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.Sprites;
 using System;
 
 namespace LudumDare38.Objects.Guns

@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using LudumDare38.Managers;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.ViewportAdapters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,15 +39,27 @@ namespace LudumDare38.Objects
 
         public bool RequestErase { get; set; }
 
+        //--------------------------------------------------
+        // Flash effect
+
+        protected Effect _flashEffect;
+        public Effect FlashEffect => _flashEffect;
+        protected float _flashProgress;
+        protected bool _flashing;
+
         //----------------------//------------------------//
 
         public KillableObject()
         {
             _dyingAlpha = 1.0f;
+            _flashEffect = EffectManager.Load("FlashEffect");
+            _flashEffect.Parameters["Progress"].SetValue(_flashProgress);
         }
 
-        protected virtual void GetDamaged(int damage)
+        public virtual void GetDamaged(int damage)
         {
+            _flashing = true;
+            _flashProgress = 1.0f;
             _hp = Math.Max(_hp - damage, 0);
             _immunityTime = InitialImmunityTime;
             if (_hp == 0)
@@ -62,6 +77,16 @@ namespace LudumDare38.Objects
         public virtual void Update(GameTime gameTime)
         {
             var deltaTime = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+            if (_flashing)
+            {
+                _flashProgress -= 0.1f * deltaTime / 10;
+                _flashEffect.Parameters["Progress"].SetValue(_flashProgress);
+                if (_flashProgress <= 0.0f)
+                {
+                    _flashProgress = 1.0f;
+                    _flashing = false;
+                }
+            }
             if (_immunityTime > 0.0f)
             {
                 _immunityTime -= deltaTime;
@@ -75,6 +100,18 @@ namespace LudumDare38.Objects
                 {
                     RequestErase = true;
                 }
+            }
+        }
+
+        protected void PreDraw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter)
+        {
+            if (_flashing)
+            {
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, transformMatrix: viewportAdapter.GetScaleMatrix(), samplerState: SamplerState.PointClamp, effect: _flashEffect);
+            }
+            else
+            {
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, transformMatrix: viewportAdapter.GetScaleMatrix(), samplerState: SamplerState.PointClamp);
             }
         }
     }

@@ -9,6 +9,7 @@ namespace LudumDare38.Characters
 {
     class Kamikaze : EnemyBase
     {
+        public override EnemyType Type => EnemyType.Kamikaze;
         protected override float InitialImmunityTime => 50.0f;
         protected override HslColor EnemyColor => new HslColor(317, 0.55f, 0.39f);
 

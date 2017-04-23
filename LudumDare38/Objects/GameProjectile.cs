@@ -5,6 +5,7 @@ using LudumDare38.Managers;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
+using LudumDare38.Helpers;
 
 namespace LudumDare38.Objects
 {
@@ -24,7 +25,7 @@ namespace LudumDare38.Objects
         BasicProjectile
     }
 
-    public class GameProjectile
+    public class GameProjectile : ICollidableObject
     {
         //--------------------------------------------------
         // Sprite
@@ -32,7 +33,6 @@ namespace LudumDare38.Objects
         private CharacterSprite _sprite;
         public CharacterSprite Sprite => _sprite;
         private Color[] _spriteTextureData;
-        public Color[] SpriteTextureData => _spriteTextureData;
 
         //--------------------------------------------------
         // Position
@@ -45,7 +45,6 @@ namespace LudumDare38.Objects
         // Rotation & Speed
 
         private float _rotation;
-        public float Rotation => _rotation;
 
         private float _speed;
 
@@ -78,17 +77,6 @@ namespace LudumDare38.Objects
 
         protected Random _rand;
 
-        //--------------------------------------------------
-        // Bouding box
-
-        public Rectangle BoundingBox
-        {
-            get
-            {
-                return new Rectangle((int)_position.X, (int)_position.Y, _sprite.GetColliderWidth(), _sprite.GetColliderHeight());
-            }
-        }
-
         //----------------------//------------------------//
 
         public GameProjectile(ProjectileType type, Vector2 initialPosition, float rotation, int speed, int damage, ProjectileSubject subject)
@@ -116,7 +104,7 @@ namespace LudumDare38.Objects
             _sprite.AddFrames("stand", new List<Rectangle>()
             {
                 new Rectangle(0, 0, 20, 10),
-                new Rectangle(20, 0, 20, 10)
+                new Rectangle(20, 0, 20, 10),
             });
         }
 
@@ -157,5 +145,48 @@ namespace LudumDare38.Objects
         {
             Sprite.Draw(spriteBatch, Position);
         }
+
+        #region ICollidableObject
+
+        public float Rotation()
+        {
+            return _sprite.Rotation;
+        }
+
+        public Rectangle Rect()
+        {
+            return new Rectangle(0, 0, _sprite.GetColliderWidth(), _sprite.GetColliderHeight());
+        }
+
+        public Rectangle BoundingRectangle()
+        {
+            return CollisionHelper.CalculateBoundingRectangle(Rect(), Transform());
+        }
+
+        public Matrix Transform()
+        {
+            return Matrix.CreateTranslation(new Vector3(-_sprite.Origin, 0.0f)) *
+                        Matrix.CreateRotationZ(_sprite.Rotation) *
+                        Matrix.CreateTranslation(new Vector3(LastPosition, 0.0f));
+        }
+
+        public Texture2D Texture()
+        {
+            return _sprite.TextureRegion.Texture;
+        }
+
+        public Color[] TextureData()
+        {
+            var frameRect = _sprite.GetCurrentFrameRectangle();
+            var textureData = new Color[frameRect.Width * frameRect.Height];
+            _sprite.TextureRegion.Texture.GetData(0,
+                new Rectangle(frameRect.X, frameRect.Y, frameRect.Width, frameRect.Height),
+                textureData,
+                0,
+                textureData.Length);
+            return textureData;
+        }
+
+        #endregion
     }
 }

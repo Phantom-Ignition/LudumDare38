@@ -10,6 +10,8 @@ using LudumDare38.Objects;
 using MonoGame.Extended.Particles.Profiles;
 using MonoGame.Extended.TextureAtlases;
 using MonoGame.Extended.Particles.Modifiers;
+using LudumDare38.Helpers;
+using MonoGame.Extended.ViewportAdapters;
 
 namespace LudumDare38.Characters
 {
@@ -23,15 +25,19 @@ namespace LudumDare38.Characters
         Shooter
     }
 
-    abstract class EnemyBase : KillableObject
+    abstract class EnemyBase : KillableObject, ICollidableObject
     {
+        //--------------------------------------------------
+        // Enemy type
+        
+        public virtual EnemyType Type => EnemyType.None;
+
         //--------------------------------------------------
         // Character sprite
 
         protected CharacterSprite _sprite;
         public CharacterSprite Sprite => _sprite;
         private Color[] _spriteTextureData;
-        public Color[] SpriteTextureData => _spriteTextureData;
 
         //--------------------------------------------------
         // Target
@@ -70,23 +76,6 @@ namespace LudumDare38.Characters
         protected virtual HslColor EnemyColor => new HslColor(0, 0, 0);
         protected ParticleEffect _shotParticles;
         protected ParticleEffect _deathParticles;
-
-        //--------------------------------------------------
-        // Bouding box
-
-        public Rectangle BoundingBox
-        {
-            get
-            {
-
-                var w = _sprite.GetColliderWidth();
-                var h = _sprite.GetColliderHeight();
-                return new Rectangle((int)_position.X - w / 2,
-                    (int)_position.Y - h / 2,
-                    w,
-                    h);
-            }
-        }
 
         //----------------------//------------------------//
 
@@ -151,7 +140,7 @@ namespace LudumDare38.Characters
                     TextureRegion = new TextureRegion2D(_particlesTexture),
                     Parameters = new ParticleReleaseParameters()
                     {
-                        Speed = new RangeF(70f, 130f),
+                        Speed = new RangeF(100f, 150f),
                         Quantity = 10,
                         Rotation = new RangeF(-1f, 1f),
                         Scale = new RangeF(2.0f, 4.5f),
@@ -184,18 +173,14 @@ namespace LudumDare38.Characters
             _deathParticles.Trigger(_position);
         }
 
-        public void aa()
-        {
-            _deathParticles.Trigger(_position);
-        }
-
         public virtual void GetShot(int damage, Vector2 point, float shotRotation)
         {
             if (_immunityTime <= 0.0f)
             {
                 GetDamaged(damage);
                 _receivedShotRotation = shotRotation;
-                _shotParticles.Trigger(point);
+                RecreateShotParticles();
+                _shotParticles.Trigger(point + new Vector2((float)Math.Cos(shotRotation), (float)Math.Sin(shotRotation)) * 10f);
             }
         }
 
@@ -218,10 +203,55 @@ namespace LudumDare38.Characters
             _sprite.SetPosition(_position);
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch)
+        public virtual void Draw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter)
         {
+            PreDraw(spriteBatch, viewportAdapter);
             _sprite.Draw(spriteBatch, _sprite.Position);
             _particles.ForEach(particle => spriteBatch.Draw(particle));
+            spriteBatch.End();
         }
+
+        #region ICollidableObject
+
+        public float Rotation()
+        {
+            return _sprite.Rotation;
+        }
+
+        public Rectangle Rect()
+        {
+            return new Rectangle(0, 0, _sprite.GetColliderWidth(), _sprite.GetColliderHeight());
+        }
+
+        public Rectangle BoundingRectangle()
+        {
+            return CollisionHelper.CalculateBoundingRectangle(Rect(), Transform());
+        }
+
+        public Matrix Transform()
+        {
+            return Matrix.CreateTranslation(new Vector3(-_sprite.Origin, 0.0f)) *
+                        Matrix.CreateRotationZ(_sprite.Rotation) *
+                        Matrix.CreateTranslation(new Vector3(_sprite.Position, 0.0f));
+        }
+
+        public Texture2D Texture()
+        {
+            return _sprite.TextureRegion.Texture;
+        }
+
+        public Color[] TextureData()
+        {
+            var frameRect = _sprite.GetCurrentFrameRectangle();
+            var textureData = new Color[frameRect.Width * frameRect.Height];
+            _sprite.TextureRegion.Texture.GetData(0,
+                new Rectangle(frameRect.X, frameRect.Y, frameRect.Width, frameRect.Height),
+                textureData,
+                0,
+                textureData.Length);
+            return textureData;
+        }
+
+        #endregion
     }
 }

@@ -211,3 +211,15 @@
 /processorParam:TextureFormat=Color
 /build:imgs/enemies/Shooter.png
 
+#begin effects/MyEffect.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:effects/MyEffect.fx
+
+#begin effects/FlashEffect.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:effects/FlashEffect.fx
+

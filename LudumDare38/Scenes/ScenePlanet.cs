@@ -140,13 +140,25 @@ namespace LudumDare38.Scenes
                 projectile.Update(gameTime);
 
                 if (projectile.RequestErase)
+                {
                     _projectilesToRemove.Add(projectile);
+                }
+                else if (projectile.Subject == ProjectileSubject.FromEnemy)
+                {
+                    var pos = projectile.BoundingRectangle().Center.ToVector2();
+                    var distance = Math.Sqrt(Math.Pow(_planet.X - pos.X, 2) + Math.Pow(_planet.Y - pos.Y, 2));
+                    if (distance < GamePlanet.Radius)
+                    {
+                        _planet.GetDamaged(projectile.Damage);
+                        projectile.Destroy();
+                    }
+                }
             }
 
             // Clear the projectiles
             _projectilesToRemove.ForEach(projectile => _projectiles.Remove(projectile));
             _projectilesToRemove.Clear();
-            
+
             // Update the enemies
             foreach (var enemy in _enemies)
             {
@@ -155,20 +167,30 @@ namespace LudumDare38.Scenes
                 {
                     _enemiesToRemove.Add(enemy);
                 }
-                if (!enemy.Dying && enemy.Alive && enemy.ImmunityTime <= 0.0f)
+                else if (!enemy.Dying && enemy.Alive)
                 {
-                    var rectEnemy = enemy.BoundingBox;
-                    var dataEnemy = enemy.SpriteTextureData;
-                    foreach (var projectile in _projectiles)
+                    if (enemy.Type == EnemyType.Shooter)
                     {
-                        if (projectile.RequestErase) continue;
-                        var textureProjectile = projectile.BoundingBox;
-                        var dataProjectile = projectile.SpriteTextureData;
-                        Vector2 collisionPoint;
-                        if (CollisionHelper.IntersectPixels(rectEnemy, dataEnemy, textureProjectile, dataProjectile, out collisionPoint))
+                        var shooter = (Shooter)enemy;
+                        while (shooter.ProjectilesQueued.Count > 0)
                         {
-                            enemy.GetShot(1, collisionPoint, projectile.Rotation);
-                            projectile.Destroy();
+                            var proj = shooter.ProjectilesQueued[0];
+                            _projectiles.Add(proj);
+                            shooter.ProjectilesQueued.Remove(proj);
+                        }
+                    }
+                    if (enemy.ImmunityTime <= 0.0f)
+                    {
+                        foreach (var projectile in _projectiles)
+                        {
+                            if (projectile.RequestErase) continue;
+                            Vector2 collisionPoint;
+                            if (projectile.Subject == ProjectileSubject.FromPlayer &&
+                                CollisionHelper.IsColliding(projectile, enemy, out collisionPoint))
+                            {
+                                enemy.GetShot(1, collisionPoint, projectile.Rotation());
+                                projectile.Destroy();
+                            }
                         }
                     }
                 }
@@ -186,8 +208,7 @@ namespace LudumDare38.Scenes
                 _rotation -= 0.03f;
             if (InputManager.Instace.KeyDown(Keys.Right))
                 _rotation += 0.03f;
-            if (InputManager.Instace.KeyPressed(Keys.P))
-                _enemies[0].aa();
+            //if (InputManager.Instace.KeyPressed(Keys.P))
         }
 
         private void UpdateEnemiesSpawn(GameTime gameTime)
@@ -219,23 +240,25 @@ namespace LudumDare38.Scenes
 
         public override void Draw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter)
         {
-            spriteBatch.Begin(transformMatrix: viewportAdapter.GetScaleMatrix(), samplerState: SamplerState.PointClamp);
-
             // Draw the HUD
+            spriteBatch.Begin(transformMatrix: viewportAdapter.GetScaleMatrix(), samplerState: SamplerState.PointClamp);
             _gameHud.Draw(spriteBatch);
+            spriteBatch.End();
 
             // Draw the planet
-            _planet.Draw(spriteBatch);
+            _planet.Draw(spriteBatch, viewportAdapter);
 
             // Draw the guns
+            spriteBatch.Begin(transformMatrix: viewportAdapter.GetScaleMatrix(), samplerState: SamplerState.PointClamp);
             _guns.ForEach(gun => gun.Draw(spriteBatch));
+            spriteBatch.End();
 
             // Draw the enemies
-            _enemies.ForEach(enemy => enemy.Draw(spriteBatch));
+            _enemies.ForEach(enemy => enemy.Draw(spriteBatch, viewportAdapter));
 
             // Draw the projectiles
+            spriteBatch.Begin(transformMatrix: viewportAdapter.GetScaleMatrix(), samplerState: SamplerState.PointClamp);
             _projectiles.ForEach(projectile => projectile.Sprite.Draw(spriteBatch, projectile.Position));
-
             spriteBatch.End();
 
             base.Draw(spriteBatch, viewportAdapter);
