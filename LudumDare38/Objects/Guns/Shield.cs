@@ -34,7 +34,7 @@ namespace LudumDare38.Objects.Guns
             });
 
             _sprite.CreateFrameList("damaged_1", 30);
-            _sprite.AddCollider("damaged_1", new Rectangle(0, 0, 20, 20));
+            _sprite.AddCollider("damaged_1", new Rectangle(0, 0, 39, 15));
             _sprite.AddFrames("damaged_1", new List<Rectangle>()
             {
                 new Rectangle(0, 15, 39, 15),
@@ -42,7 +42,7 @@ namespace LudumDare38.Objects.Guns
             });
 
             _sprite.CreateFrameList("damaged_2", 30);
-            _sprite.AddCollider("damaged_2", new Rectangle(0, 0, 20, 20));
+            _sprite.AddCollider("damaged_2", new Rectangle(0, 0, 39, 15));
             _sprite.AddFrames("damaged_2", new List<Rectangle>()
             {
                 new Rectangle(0, 30, 39, 15),
@@ -120,9 +120,9 @@ namespace LudumDare38.Objects.Guns
                         Matrix.CreateTranslation(new Vector3(_sprite.Position, 0.0f));
         }
 
-        public override void PreDraw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter)
+        public override void PreDraw(SpriteBatch spriteBatch, Matrix transformMatrix)
         {
-            _killableObject.PreDraw(spriteBatch, viewportAdapter);
+            _killableObject.PreDraw(spriteBatch, transformMatrix);
         }
     }
 }

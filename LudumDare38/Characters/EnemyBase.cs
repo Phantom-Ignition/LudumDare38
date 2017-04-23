@@ -201,11 +201,12 @@ namespace LudumDare38.Characters
 
             _position += _knockbackAcceleration;
             _sprite.SetPosition(_position);
+            _sprite.Update(gameTime);
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter)
+        public virtual void Draw(SpriteBatch spriteBatch, Matrix transformMatrix)
         {
-            PreDraw(spriteBatch, viewportAdapter);
+            PreDraw(spriteBatch, transformMatrix);
             _sprite.Draw(spriteBatch, _sprite.Position);
             _particles.ForEach(particle => spriteBatch.Draw(particle));
             spriteBatch.End();

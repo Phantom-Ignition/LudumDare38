@@ -28,19 +28,39 @@ namespace LudumDare38.Characters
         protected override void CreateSprite(Texture2D texture)
         {
             _sprite = new CharacterSprite(texture);
-            _sprite.Origin = new Vector2(47f, 18);
+            _sprite.Origin = new Vector2(60f, 40f);
 
-            _sprite.CreateFrameList("stand", 0);
-            _sprite.AddCollider("stand", new Rectangle(0, 0, 114, 78));
+            _sprite.CreateFrameList("stand", 80);
+            _sprite.AddCollider("stand", new Rectangle(0, 0, 120, 80));
             _sprite.AddFrames("stand", new List<Rectangle>()
             {
-                new Rectangle(0, 0, 114, 78)
+                new Rectangle(0, 0, 120, 80),
+                new Rectangle(120, 0, 120, 80),
+                new Rectangle(240, 0, 120, 80),
+                new Rectangle(360, 0, 120, 80)
+            });
+
+            _sprite.CreateFrameList("shooting", 150, false);
+            _sprite.AddCollider("shooting", new Rectangle(0, 0, 120, 80));
+            _sprite.AddFrames("shooting", new List<Rectangle>()
+            {
+                new Rectangle(0, 80, 120, 80),
+                new Rectangle(120, 80, 120, 80),
+                new Rectangle(240, 80, 120, 80),
+                new Rectangle(360, 80, 120, 80)
             });
         }
 
         private void QueueProjectile()
         {
-            var proj = new GameProjectile(ProjectileType.BasicProjectile, _position, _sprite.Rotation, 5, 1, ProjectileSubject.FromEnemy);
+            var rotation = _sprite.Rotation;
+            var sign = Math.Sign(Math.Cos(rotation));
+            var position = _position + new Vector2((float)Math.Cos(rotation) * 21, (float)Math.Sin(rotation) * 25);
+            if (_sprite.Effect == SpriteEffects.FlipVertically)
+            {
+                position.Y += 6.0f;
+            }
+            var proj = new GameProjectile(ProjectileType.BasicProjectile, position, _sprite.Rotation, 2, 1, ProjectileSubject.FromEnemy);
             _projectilesQueued.Add(proj);
         }
 
@@ -59,7 +79,7 @@ namespace LudumDare38.Characters
             var distanceToTarget = Math.Sqrt(Math.Pow(_target.X - _position.X, 2) + Math.Pow(_target.Y - _position.Y, 2));
             if (distanceToTarget > 200)
             {
-                _position += _velocity * 1;
+                _position += _velocity * 5;
                 _sprite.Rotation = (float)Math.Atan2(_velocity.Y, _velocity.X);
             }
             else
@@ -74,8 +94,7 @@ namespace LudumDare38.Characters
         {
             if (_shotCooldown <= 0.0f)
             {
-                _shotCooldown = 1000.0f;
-                QueueProjectile();
+                _sprite.SetFrameList("shooting");
             }
             else
             {
@@ -85,6 +104,18 @@ namespace LudumDare38.Characters
 
         private void UpdateSprite()
         {
+            if (_sprite.CurrentFrameList == "shooting")
+            {
+                if (_shotCooldown <= 0.0f && _sprite.CurrentFrame == 2)
+                {
+                    _shotCooldown = 1500.0f;
+                    QueueProjectile();
+                }
+                if (_sprite.Looped)
+                {
+                    _sprite.SetFrameList("stand");
+                }
+            }
             _sprite.Effect = SpriteEffects.None;
             if (_velocity.X < 0)
             {

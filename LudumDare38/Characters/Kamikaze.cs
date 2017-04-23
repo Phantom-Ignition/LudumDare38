@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using LudumDare38.Sprites;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended.Particles;
+using LudumDare38.Objects;
 
 namespace LudumDare38.Characters
 {
@@ -21,13 +22,16 @@ namespace LudumDare38.Characters
         protected override void CreateSprite(Texture2D texture)
         {
             _sprite = new CharacterSprite(texture);
-            _sprite.Origin = new Vector2(47f, 18);
+            _sprite.Origin = new Vector2(50f, 20f);
 
-            _sprite.CreateFrameList("stand", 0);
-            _sprite.AddCollider("stand", new Rectangle(0, 0, 94, 36));
+            _sprite.CreateFrameList("stand", 80);
+            _sprite.AddCollider("stand", new Rectangle(0, 0, 100, 40));
             _sprite.AddFrames("stand", new List<Rectangle>()
             {
-                new Rectangle(0, 0, 94, 36)
+                new Rectangle(0, 0, 100, 40),
+                new Rectangle(100, 0, 100, 40),
+                new Rectangle(200, 0, 100, 40),
+                new Rectangle(300, 0, 100, 40)
             });
         }
 
@@ -43,12 +47,19 @@ namespace LudumDare38.Characters
         private void UpdateMovement()
         {
             _position += _velocity * 1;
-            _sprite.Rotation = (float)Math.Atan2(_velocity.Y, _velocity.X); ;
+
+            var distance = Math.Sqrt(Math.Pow(_target.X - _position.X, 2) + Math.Pow(_target.Y - _position.Y, 2));
+            if (distance < GamePlanet.Radius + _sprite.GetColliderWidth() / 2)
+            {
+                Explode();
+                return;
+            }
+
+             _sprite.Rotation = (float)Math.Atan2(_velocity.Y, _velocity.X);
             if (_velocity.X < 0)
             {
                 _sprite.Effect = SpriteEffects.FlipVertically;
             }
-
             _sprite.Position = _position;
         }
 

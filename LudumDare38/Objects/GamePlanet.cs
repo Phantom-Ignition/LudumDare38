@@ -42,9 +42,9 @@ namespace LudumDare38.Objects
             _sprite.Position = _position;
         }
 
-        public void Draw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter)
+        public void Draw(SpriteBatch spriteBatch, Matrix transformMatrix)
         {
-            PreDraw(spriteBatch, viewportAdapter);
+            PreDraw(spriteBatch, transformMatrix);
             spriteBatch.Draw(_sprite);
             spriteBatch.End();
         }

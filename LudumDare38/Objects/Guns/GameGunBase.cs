@@ -77,14 +77,14 @@ namespace LudumDare38.Objects.Guns
             }
         }
 
-        public virtual void PreDraw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter)
+        public virtual void PreDraw(SpriteBatch spriteBatch, Matrix transformMatrix)
         {
-            spriteBatch.Begin(transformMatrix: viewportAdapter.GetScaleMatrix(), samplerState: SamplerState.PointClamp);
+            spriteBatch.Begin(transformMatrix: transformMatrix, samplerState: SamplerState.PointClamp);
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter)
+        public virtual void Draw(SpriteBatch spriteBatch, Matrix transformMatrix)
         {
-            PreDraw(spriteBatch, viewportAdapter);
+            PreDraw(spriteBatch, transformMatrix);
             _sprite.Draw(spriteBatch, _sprite.Position);
             spriteBatch.End();
         }

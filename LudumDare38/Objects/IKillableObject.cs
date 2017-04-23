@@ -9,6 +9,6 @@ namespace LudumDare38.Objects
         void GetDamaged(int damage);
         void OnDeath();
         void Update(GameTime gameTime);
-        void PreDraw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter);
+        void PreDraw(SpriteBatch spriteBatch, Matrix transformMatrix);
     }
 }

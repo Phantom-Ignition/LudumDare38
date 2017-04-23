@@ -3,12 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended.ViewportAdapters;
-using MonoGame.Extended.Sprites;
-using MonoGame.Extended.Maps.Tiled;
 using LudumDare38.Objects;
 using Microsoft.Xna.Framework.Input;
 using LudumDare38.Objects.Guns;
@@ -54,6 +50,19 @@ namespace LudumDare38.Scenes
         private float _rotation;
 
         //--------------------------------------------------
+        // Random
+
+        private Random _rand;
+
+        //--------------------------------------------------
+        // Shake Viewport
+
+        private bool _shakeViewport;
+        private float _shakeStartAngle;
+        private float _shakeRadius;
+        private Vector2 _shakeOffset;
+
+        //--------------------------------------------------
         // Enemies Spawn Manager
 
         private EnemiesSpawnManager _enemiesSpawnManager;
@@ -65,6 +74,7 @@ namespace LudumDare38.Scenes
             base.LoadContent();
 
             _gameHud = new GameHud();
+            _rand = new Random();
 
             CreatePlanet();
             CreateGuns();
@@ -273,7 +283,26 @@ namespace LudumDare38.Scenes
                 _rotation -= 0.03f;
             if (InputManager.Instace.KeyDown(Keys.Right))
                 _rotation += 0.03f;
-            //if (InputManager.Instace.KeyPressed(Keys.P))
+            if (InputManager.Instace.KeyPressed(Keys.P))
+            {
+                _shakeViewport = true;
+                _shakeRadius = 5.0f;
+                _shakeOffset = new Vector2((float)Math.Sin(_shakeStartAngle) * _shakeRadius, (float)Math.Cos(_shakeStartAngle) * _shakeRadius);
+                _shakeStartAngle = _rand.Next(60);
+            }
+
+            // Update the viewport shake
+            _shakeOffset = Vector2.Zero;
+            if (_shakeViewport)
+            {
+                _shakeOffset = new Vector2((float)Math.Cos(_shakeStartAngle) * _shakeRadius, (float)Math.Sin(_shakeStartAngle) * _shakeRadius);
+                _shakeRadius -= 0.25f;
+                _shakeStartAngle += (150 + _rand.Next(60));
+                if (_shakeRadius <= 2.0f)
+                {
+                    _shakeViewport = false;
+                }
+            }
         }
 
         private void UpdateEnemiesSpawn(GameTime gameTime)
@@ -305,19 +334,21 @@ namespace LudumDare38.Scenes
 
         public override void Draw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter)
         {
+            var transformMatrix = viewportAdapter.GetScaleMatrix() * Matrix.CreateTranslation(_shakeOffset.X, _shakeOffset.Y, 0);
+
             // Draw the HUD
-            spriteBatch.Begin(transformMatrix: viewportAdapter.GetScaleMatrix(), samplerState: SamplerState.PointClamp);
+            spriteBatch.Begin(transformMatrix: transformMatrix, samplerState: SamplerState.PointClamp);
             _gameHud.Draw(spriteBatch);
             spriteBatch.End();
 
             // Draw the planet
-            _planet.Draw(spriteBatch, viewportAdapter);
+            _planet.Draw(spriteBatch, transformMatrix);
 
             // Draw the guns
-            _guns.ForEach(gun => gun.Draw(spriteBatch, viewportAdapter));
+            _guns.ForEach(gun => gun.Draw(spriteBatch, transformMatrix));
 
             // Draw the enemies
-            _enemies.ForEach(enemy => enemy.Draw(spriteBatch, viewportAdapter));
+            _enemies.ForEach(enemy => enemy.Draw(spriteBatch, transformMatrix));
 
             // Draw the projectiles
             spriteBatch.Begin(transformMatrix: viewportAdapter.GetScaleMatrix(), samplerState: SamplerState.PointClamp);

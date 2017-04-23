@@ -141,12 +141,12 @@ namespace LudumDare38.Objects.Guns
             return false;
         }
 
-        public override void Draw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter)
+        public override void Draw(SpriteBatch spriteBatch, Matrix transformMatrix)
         {
-            PreDraw(spriteBatch, viewportAdapter);
+            PreDraw(spriteBatch, transformMatrix);
             _laser.Sprite.Draw(spriteBatch, _laser.Sprite.Position);
             spriteBatch.End();
-            base.Draw(spriteBatch, viewportAdapter);
+            base.Draw(spriteBatch, transformMatrix);
         }
     }
 }

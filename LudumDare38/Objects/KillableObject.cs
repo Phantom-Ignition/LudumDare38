@@ -33,7 +33,6 @@ namespace LudumDare38.Objects
         public bool Dying => _dying;
 
         protected float _dyingAlpha;
-        protected float _dyingTimer;
         public float DyingAlpha => _dyingAlpha;
 
         //--------------------------------------------------
@@ -98,7 +97,6 @@ namespace LudumDare38.Objects
             }
             if (_dying)
             {
-                _dyingTimer += deltaTime;
                 _dyingAlpha -= deltaTime / 300;
                 // -1.5f because we wan't to give time the particles to fade out
                 if (_dyingAlpha <= -1.5f)
@@ -108,15 +106,15 @@ namespace LudumDare38.Objects
             }
         }
 
-        public void PreDraw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter)
+        public void PreDraw(SpriteBatch spriteBatch, Matrix transformMatrix)
         {
             if (_flashing)
             {
-                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, transformMatrix: viewportAdapter.GetScaleMatrix(), samplerState: SamplerState.PointClamp, effect: _flashEffect);
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, transformMatrix: transformMatrix, samplerState: SamplerState.PointClamp, effect: _flashEffect);
             }
             else
             {
-                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, transformMatrix: viewportAdapter.GetScaleMatrix(), samplerState: SamplerState.PointClamp);
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, transformMatrix: transformMatrix, samplerState: SamplerState.PointClamp);
             }
         }
     }

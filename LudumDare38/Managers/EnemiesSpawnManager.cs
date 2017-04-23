@@ -78,7 +78,7 @@ namespace LudumDare38.Managers
             _queue = new List<EnemyModel>();
             _waveSpawnQueue = new List<EnemyType>();
             _rand = new Random();
-            _spawnInterval = 1500.0f;
+            _spawnInterval = 200.0f;
 
             _currentSpawnInterval = 1500.0f; // TODO REMOVE THIS
 
@@ -95,13 +95,23 @@ namespace LudumDare38.Managers
                 new List<EnemyModel> {
                     new  EnemyModel
                     {
-                        Type = EnemyType.Kamikaze,
+                        Type = EnemyType.Shooter,
                         Position = new Vector2(virtualSize.X, virtualSize.Y / 4)
                     },
                     new  EnemyModel
                     {
                         Type = EnemyType.Shooter,
-                        Position = new Vector2(0, virtualSize.Y / 4)
+                        Position = new Vector2(-10, virtualSize.Y / 4)
+                    },
+                    new  EnemyModel
+                    {
+                        Type = EnemyType.Shooter,
+                        Position = new Vector2(virtualSize.X / 2, 0)
+                    },
+                    new  EnemyModel
+                    {
+                        Type = EnemyType.Shooter,
+                        Position = new Vector2(virtualSize.X / 2, virtualSize.Y)
                     }
                 },
                 // Wave #2
