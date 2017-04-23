@@ -173,9 +173,9 @@ namespace LudumDare38.Scenes
             _particleEffects.ForEach(particle => particle.Update(deltaTime));
         }
 
-        public override void Draw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter)
+        public override void Draw(SpriteBatch spriteBatch, Matrix transformMatrix)
         {
-            base.Draw(spriteBatch, viewportAdapter);
+            base.Draw(spriteBatch, transformMatrix);
             var debugMode = SceneManager.Instance.DebugMode;
 
             // Draw the camera (with the map)

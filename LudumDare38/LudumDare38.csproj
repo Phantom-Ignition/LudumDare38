@@ -24,6 +24,7 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>false</Prefer32Bit>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\$(MonoGamePlatform)\$(Platform)\$(Configuration)\</OutputPath>
@@ -50,7 +51,9 @@
     <Compile Include="Characters\Shooter.cs" />
     <Compile Include="Extensions\RectangleExtensions.cs" />
     <Compile Include="GameMain.cs" />
+    <Compile Include="Helpers\BloomFilter.cs" />
     <Compile Include="Helpers\CollisionHelper.cs" />
+    <Compile Include="Helpers\QuadRenderer.cs" />
     <Compile Include="Managers\EffectManager.cs" />
     <Compile Include="Managers\EnemiesSpawnManager.cs" />
     <Compile Include="Managers\ImageManager.cs" />
@@ -69,6 +72,7 @@
     <Compile Include="Objects\IKillableObject.cs" />
     <Compile Include="Objects\KillableObject.cs" />
     <Compile Include="Objects\PhysicalObject.cs" />
+    <Compile Include="ParticleModifiers\VelocityModifier.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scenes\SceneBase.cs" />

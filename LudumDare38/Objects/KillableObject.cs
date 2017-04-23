@@ -1,12 +1,7 @@
 ﻿using LudumDare38.Managers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.ViewportAdapters;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LudumDare38.Objects
 {
@@ -98,8 +93,8 @@ namespace LudumDare38.Objects
             if (_dying)
             {
                 _dyingAlpha -= deltaTime / 300;
-                // -1.5f because we wan't to give time the particles to fade out
-                if (_dyingAlpha <= -1.5f)
+                // -2.5f because we wan't to give time the particles to fade out
+                if (_dyingAlpha <= -2.5f)
                 {
                     RequestErase = true;
                 }

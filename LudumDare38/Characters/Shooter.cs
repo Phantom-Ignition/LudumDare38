@@ -40,7 +40,7 @@ namespace LudumDare38.Characters
                 new Rectangle(360, 0, 120, 80)
             });
 
-            _sprite.CreateFrameList("shooting", 150, false);
+            _sprite.CreateFrameList("shooting", 100, false);
             _sprite.AddCollider("shooting", new Rectangle(0, 0, 120, 80));
             _sprite.AddFrames("shooting", new List<Rectangle>()
             {
@@ -60,7 +60,7 @@ namespace LudumDare38.Characters
             {
                 position.Y += 6.0f;
             }
-            var proj = new GameProjectile(ProjectileType.BasicProjectile, position, _sprite.Rotation, 2, 1, ProjectileSubject.FromEnemy);
+            var proj = new GameProjectile(ProjectileType.AlienProjectile, position, _sprite.Rotation, 2, 1, ProjectileSubject.FromEnemy);
             _projectilesQueued.Add(proj);
         }
 
@@ -119,7 +119,7 @@ namespace LudumDare38.Characters
             _sprite.Effect = SpriteEffects.None;
             if (_velocity.X < 0)
             {
-                _sprite.Effect = SpriteEffects.FlipVertically;
+                //_sprite.Effect = SpriteEffects.FlipVertically;
             }
         }
     }

@@ -12,6 +12,7 @@ using MonoGame.Extended.TextureAtlases;
 using MonoGame.Extended.Particles.Modifiers;
 using LudumDare38.Helpers;
 using MonoGame.Extended.ViewportAdapters;
+using LudumDare38.ParticleModifiers;
 
 namespace LudumDare38.Characters
 {
@@ -113,14 +114,15 @@ namespace LudumDare38.Characters
                         TextureRegion = new TextureRegion2D(_particlesTexture),
                         Parameters = new ParticleReleaseParameters()
                         {
-                            Speed = new RangeF(70f, 200f),
+                            Speed = new RangeF(150f, 220f),
                             Quantity = 100,
                             Rotation = new RangeF(-1f, 1f),
-                            Scale = new RangeF(2.0f, 4.5f),
+                            Scale = new RangeF(2.0f, 6f),
                             Color = EnemyColor
                         },
                         Modifiers = new IModifier[]
                         {
+                            new VelocityModifier { VelocityThreshold = 0.98f },
                             new RotationModifier { RotationRate = 10.0f },
                             new OpacityFastFadeModifier()
                         }
@@ -171,6 +173,7 @@ namespace LudumDare38.Characters
         {
             base.OnDeath();
             _deathParticles.Trigger(_position);
+            SceneManager.Instance.StartCameraShake(3, 500);
         }
 
         public virtual void GetShot(int damage, Vector2 point, float shotRotation)

@@ -22,7 +22,8 @@ namespace LudumDare38.Objects
 
     public enum ProjectileType
     {
-        BasicProjectile
+        BasicProjectile,
+        AlienProjectile
     }
 
     public class GameProjectile : ICollidableObject
@@ -99,13 +100,28 @@ namespace LudumDare38.Objects
             _sprite = new CharacterSprite(texture);
             _sprite.Rotation = _rotation;
 
-            _sprite.CreateFrameList("stand", 200);
-            _sprite.AddCollider("stand", new Rectangle(0, 0, 20, 10));
-            _sprite.AddFrames("stand", new List<Rectangle>()
+            switch (type)
             {
-                new Rectangle(0, 0, 20, 10),
-                new Rectangle(20, 0, 20, 10),
-            });
+                case ProjectileType.BasicProjectile:
+                    _sprite.CreateFrameList("stand", 200);
+                    _sprite.AddCollider("stand", new Rectangle(0, 0, 20, 10));
+                    _sprite.AddFrames("stand", new List<Rectangle>()
+                    {
+                        new Rectangle(0, 0, 20, 10),
+                        new Rectangle(20, 0, 20, 10),
+                    });
+                    break;
+
+                case ProjectileType.AlienProjectile:
+                    _sprite.CreateFrameList("stand", 200);
+                    _sprite.AddCollider("stand", new Rectangle(0, 0, 24, 24));
+                    _sprite.AddFrames("stand", new List<Rectangle>()
+                    {
+                        new Rectangle(0, 0, 24, 24),
+                        new Rectangle(24, 0, 24, 24),
+                    });
+                    break;
+            }
         }
 
         private void CreateSpriteTextureData()

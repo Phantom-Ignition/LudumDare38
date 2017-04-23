@@ -33,6 +33,12 @@ namespace LudumDare38.Objects
             _sprite.Position = _position;
         }
 
+        public override void GetDamaged(int damage)
+        {
+            base.GetDamaged(damage);
+            SceneManager.Instance.StartCameraShake(1, 200);
+        }
+
         public void Update(GameTime gameTime, out float floating)
         {
             base.Update(gameTime);

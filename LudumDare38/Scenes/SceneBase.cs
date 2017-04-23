@@ -57,6 +57,6 @@ namespace LudumDare38.Scenes
                 spriteBatch.DrawString(_debugFont, value.Key + ": " + value.Value, new Vector2(5, 25 + 20 * i++), Color.Gray);
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter) { }
+        public virtual void Draw(SpriteBatch spriteBatch, Matrix transformMatrix) { }
     }
 }

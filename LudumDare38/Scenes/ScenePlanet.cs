@@ -55,14 +55,6 @@ namespace LudumDare38.Scenes
         private Random _rand;
 
         //--------------------------------------------------
-        // Shake Viewport
-
-        private bool _shakeViewport;
-        private float _shakeStartAngle;
-        private float _shakeRadius;
-        private Vector2 _shakeOffset;
-
-        //--------------------------------------------------
         // Enemies Spawn Manager
 
         private EnemiesSpawnManager _enemiesSpawnManager;
@@ -73,10 +65,10 @@ namespace LudumDare38.Scenes
         {
             base.LoadContent();
 
-            _gameHud = new GameHud();
             _rand = new Random();
 
             CreatePlanet();
+            CreateHud();
             CreateGuns();
             InitializeProjectiles();
             InitializeEnemies();
@@ -88,6 +80,15 @@ namespace LudumDare38.Scenes
             var center = SceneManager.Instance.VirtualSize / 2;
             var planetTexture = ImageManager.Load("Planet");
             _planet = new GamePlanet(planetTexture, center);
+        }
+
+        private void CreateHud()
+        {
+            _gameHud = new GameHud()
+            {
+                MaxHP = _planet.HP,
+                CurrentHP = _planet.HP
+            };
         }
 
         private void CreateGuns()
@@ -190,7 +191,7 @@ namespace LudumDare38.Scenes
                 {
                     var pos = projectile.BoundingRectangle().Center.ToVector2();
                     var distance = Math.Sqrt(Math.Pow(_planet.X - pos.X, 2) + Math.Pow(_planet.Y - pos.Y, 2));
-                    if (distance < GamePlanet.Radius)
+                    if (distance < GamePlanet.Radius + projectile.Sprite.GetColliderWidth() / 3)
                     {
                         _planet.GetDamaged(projectile.Damage);
                         projectile.Destroy();
@@ -278,30 +279,17 @@ namespace LudumDare38.Scenes
             // Update the enemy spawn manager
             UpdateEnemiesSpawn(gameTime);
 
+            // Update the Hud
+            _gameHud.CurrentHP = _planet.HP;
+
             // Update the rotation
             if (InputManager.Instace.KeyDown(Keys.Left))
-                _rotation -= 0.03f;
+                _rotation -= 0.05f;
             if (InputManager.Instace.KeyDown(Keys.Right))
-                _rotation += 0.03f;
+                _rotation += 0.05f;
             if (InputManager.Instace.KeyPressed(Keys.P))
             {
-                _shakeViewport = true;
-                _shakeRadius = 5.0f;
-                _shakeOffset = new Vector2((float)Math.Sin(_shakeStartAngle) * _shakeRadius, (float)Math.Cos(_shakeStartAngle) * _shakeRadius);
-                _shakeStartAngle = _rand.Next(60);
-            }
-
-            // Update the viewport shake
-            _shakeOffset = Vector2.Zero;
-            if (_shakeViewport)
-            {
-                _shakeOffset = new Vector2((float)Math.Cos(_shakeStartAngle) * _shakeRadius, (float)Math.Sin(_shakeStartAngle) * _shakeRadius);
-                _shakeRadius -= 0.25f;
-                _shakeStartAngle += (150 + _rand.Next(60));
-                if (_shakeRadius <= 2.0f)
-                {
-                    _shakeViewport = false;
-                }
+                SceneManager.Instance.StartCameraShake(1, 500);
             }
         }
 
@@ -332,10 +320,8 @@ namespace LudumDare38.Scenes
             }
         }
 
-        public override void Draw(SpriteBatch spriteBatch, ViewportAdapter viewportAdapter)
+        public override void Draw(SpriteBatch spriteBatch, Matrix transformMatrix)
         {
-            var transformMatrix = viewportAdapter.GetScaleMatrix() * Matrix.CreateTranslation(_shakeOffset.X, _shakeOffset.Y, 0);
-
             // Draw the HUD
             spriteBatch.Begin(transformMatrix: transformMatrix, samplerState: SamplerState.PointClamp);
             _gameHud.Draw(spriteBatch);
@@ -351,11 +337,11 @@ namespace LudumDare38.Scenes
             _enemies.ForEach(enemy => enemy.Draw(spriteBatch, transformMatrix));
 
             // Draw the projectiles
-            spriteBatch.Begin(transformMatrix: viewportAdapter.GetScaleMatrix(), samplerState: SamplerState.PointClamp);
+            spriteBatch.Begin(transformMatrix: transformMatrix, samplerState: SamplerState.PointClamp);
             _projectiles.ForEach(projectile => projectile.Sprite.Draw(spriteBatch, projectile.Position));
             spriteBatch.End();
 
-            base.Draw(spriteBatch, viewportAdapter);
+            base.Draw(spriteBatch, transformMatrix);
         }
     }
 }
