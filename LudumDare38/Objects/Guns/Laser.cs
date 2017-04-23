@@ -1,31 +1,25 @@
-﻿using LudumDare38.Managers;
+﻿using LudumDare38.Helpers;
+using LudumDare38.Managers;
 using LudumDare38.Sprites;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.Sprites;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LudumDare38.Objects.Guns
 {
-    class Laser : GameGunBase
+    class Laser : ICollidableObject
     {
         private CharacterSprite _laserSprite;
-        private bool _isShooting;
+        public CharacterSprite Sprite => _laserSprite;
 
-        public Laser(int orbitLevel, GunType gunType, float angle) : base(orbitLevel, gunType, angle)
-        {
-            _cooldown = 1200.0f;
-            CreateLaserSprite();
-        }
+        private Vector2 _position;
+        private float _rotation;
 
-        private void CreateLaserSprite()
+        public Laser(Texture2D texture)
         {
-            var laserTexture = ImageManager.LoadGun("LaserBeam");
-            _laserSprite = new CharacterSprite(laserTexture);
+            _laserSprite = new CharacterSprite(texture);
             _laserSprite.Origin = new Vector2(4.5f, 0f);
             _laserSprite.Scale = new Vector2(1, 100);
 
@@ -55,121 +49,52 @@ namespace LudumDare38.Objects.Guns
             _laserSprite.IsVisible = false;
         }
 
-        protected override void CreateSprite()
+        public void Update(GameTime gameTime, Vector2 position, float rotation)
         {
-            var texture = ImageManager.LoadGun("Laser");
-            _sprite = new CharacterSprite(texture);
-            _sprite.Origin = new Vector2(12.5f, 12.5f);
-
-            _sprite.CreateFrameList("stand", 50);
-            _sprite.AddCollider("stand", new Rectangle(0, 0, 25, 25));
-            _sprite.AddFrames("stand", new List<Rectangle>()
-            {
-                new Rectangle(0, 0, 25, 25),
-                new Rectangle(25, 0, 25, 25),
-                new Rectangle(50, 0, 25, 25),
-                new Rectangle(75, 0, 25, 25)
-            });
-
-            _sprite.CreateFrameList("preparation", 100);
-            _sprite.AddCollider("preparation", new Rectangle(0, 0, 25, 25));
-            _sprite.AddFrames("preparation", new List<Rectangle>()
-            {
-                new Rectangle(0, 25, 25, 25),
-                new Rectangle(25, 25, 25, 25)
-            });
-
-            _sprite.CreateFrameList("loading", 100);
-            _sprite.AddCollider("loading", new Rectangle(0, 0, 25, 25));
-            _sprite.AddFrames("loading", new List<Rectangle>()
-            {
-                new Rectangle(0, 50, 25, 25),
-                new Rectangle(25, 50, 25, 25)
-            });
-
-            _sprite.CreateFrameList("shoting", 100);
-            _sprite.AddCollider("shoting", new Rectangle(0, 0, 25, 25));
-            _sprite.AddFrames("shoting", new List<Rectangle>()
-            {
-                new Rectangle(0, 75, 25, 25),
-                new Rectangle(25, 75, 25, 25)
-            });
-
-            _sprite.CreateFrameList("recover", 40);
-            _sprite.AddCollider("recover", new Rectangle(0, 0, 25, 25));
-            _sprite.AddFrames("recover", new List<Rectangle>()
-            {
-                new Rectangle(0, 100, 25, 25),
-                new Rectangle(25, 100, 25, 25),
-                new Rectangle(50, 100, 25, 25),
-            });
-        }
-
-        public override void Update(GameTime gameTime, float rotation, float floating)
-        {
-            base.Update(gameTime, rotation, floating);
             _laserSprite.Update(gameTime);
-            _laserSprite.Position = _sprite.Position;
-            _laserSprite.Rotation = _sprite.Rotation + (float)Math.PI;
-            UpdateLaserShot();
+            _laserSprite.Position = position;
+            _laserSprite.Rotation = rotation + (float)Math.PI;
+            _position = position;
+            _rotation = rotation;
         }
 
-        private void UpdateLaserShot()
+        public float Rotation()
         {
-            var spriteFrame = _sprite.CurrentFrameList;
-            if (_sprite.Looped)
-            {
-                switch (spriteFrame)
-                {
-                    case "preparation":
-                        _sprite.SetFrameList("loading");
-                        break;
-                    case "loading":
-                        _sprite.SetFrameList("shoting");
-                        _isShooting = true;
-                        _laserSprite.IsVisible = true;
-                        _laserSprite.Scale = Vector2.One;
-                        _laserSprite.SetFrameList("attack");
-                        _laserSprite.ResetCurrentFrameList();
-                        break;
-                    case "recover":
-                        _sprite.SetFrameList("stand");
-                        break;
-                }
-            }
-
-            if (_isShooting)
-            {
-                _laserSprite.Scale = new Vector2(1, _laserSprite.Scale.Y * 2f);
-                if (_laserSprite.Looped)
-                {
-                    if (_laserSprite.CurrentFrameList == "attack")
-                    {
-                        _laserSprite.SetFrameList("dispose");
-                        _sprite.SetFrameList("recover");
-                    }
-                    else if (_laserSprite.CurrentFrameList == "dispose")
-                    {
-                        _isShooting = false;
-                        _laserSprite.IsVisible = false;
-                    }
-                }
-            }
+            return _rotation;
         }
 
-        public override bool Shot(out GameProjectile projectile)
+        public Rectangle Rect()
         {
-            base.Shot(out projectile);
-
-            _sprite.SetFrameList("preparation");
-
-            return false;
+            return new Rectangle(0, 0, 9, (int)_laserSprite.Scale.Y);
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public Rectangle BoundingRectangle()
         {
-            _laserSprite.Draw(spriteBatch, _laserSprite.Position);
-            base.Draw(spriteBatch);
+            return CollisionHelper.CalculateBoundingRectangle(Rect(), Transform());
+        }
+
+        public Matrix Transform()
+        {
+            return Matrix.CreateTranslation(new Vector3(-_laserSprite.Origin, 0.0f)) *
+                        Matrix.CreateRotationZ(_laserSprite.Rotation) *
+                        Matrix.CreateTranslation(new Vector3(_position, 0.0f));
+        }
+
+        public Texture2D Texture()
+        {
+            var rect = Rect();
+            var colorData = Enumerable.Range(0, rect.Width * rect.Height).Select(i => Color.Red).ToArray();
+            var texture = new Texture2D(SceneManager.Instance.GraphicsDevice, rect.Width, rect.Height);
+            texture.SetData(colorData);
+            return texture;
+        }
+
+        public Color[] TextureData()
+        {
+            var texture = Texture();
+            var textureData = new Color[texture.Width * texture.Height];
+            texture.GetData(textureData);
+            return textureData;
         }
     }
 }

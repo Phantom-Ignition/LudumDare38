@@ -8,13 +8,17 @@ namespace LudumDare38.Objects.Guns
 {
     public enum GunType
     {
-        Basic
+        Basic,
+        Shield,
+        LaserGun
     }
 
     abstract class GameGunBase
     {
-        protected int _orbitLevel;
         protected GunType _gunType;
+        public GunType GunType => _gunType;
+
+        protected int _orbitLevel;
         protected float _angle;
         protected CharacterSprite _sprite;
         

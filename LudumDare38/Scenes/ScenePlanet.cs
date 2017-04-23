@@ -83,8 +83,8 @@ namespace LudumDare38.Scenes
         {
             _guns = new List<GameGunBase>();
             _guns.Add(new BasicGun(1, GunType.Basic, 0.0f));
-            _guns.Add(new Laser(1, GunType.Basic, (float)Math.PI));
-            _guns.Add(new Shield(2, GunType.Basic, (float)Math.PI * 0.5f));
+            _guns.Add(new LaserGun(1, GunType.LaserGun, (float)Math.PI));
+            _guns.Add(new Shield(2, GunType.Shield, (float)Math.PI * 0.5f));
         }
 
         private void InitializeProjectiles()
@@ -118,7 +118,26 @@ namespace LudumDare38.Scenes
             _planet.Update(gameTime, out floating);
 
             // Update the guns
-            _guns.ForEach(gun => gun.Update(gameTime, _rotation, floating));
+            foreach (var gun in _guns)
+            {
+                gun.Update(gameTime, _rotation, floating);
+                if (gun.GunType == GunType.LaserGun)
+                {
+                    var laserGun = (LaserGun)gun;
+                    if (laserGun.Laser.Sprite.CurrentFrameList == "attack")
+                    {
+                        foreach (var enemy in _enemies)
+                        {
+                            Vector2 collisionPoint;
+                            if (CollisionHelper.IsColliding(laserGun.Laser, enemy, out collisionPoint))
+                            {
+                                enemy.GetShot(1, collisionPoint, laserGun.Laser.Rotation());
+                            }
+                        }
+                    }
+                }
+            }
+
             if (InputManager.Instace.KeyPressed(Keys.S))
             {
                 foreach (var gun in _guns)
@@ -151,6 +170,14 @@ namespace LudumDare38.Scenes
                     {
                         _planet.GetDamaged(projectile.Damage);
                         projectile.Destroy();
+                    }
+                    if (!projectile.RequestErase)
+                    {
+                        var shields = _guns.Where(gun => gun.GunType == GunType.Shield).ToArray();
+                        foreach (var shield in shields)
+                        {
+
+                        }
                     }
                 }
             }

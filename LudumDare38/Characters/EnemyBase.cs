@@ -121,6 +121,7 @@ namespace LudumDare38.Characters
                         },
                         Modifiers = new IModifier[]
                         {
+                            new LinearGravityModifier
                             new RotationModifier { RotationRate = 10.0f },
                             new OpacityFastFadeModifier()
                         }

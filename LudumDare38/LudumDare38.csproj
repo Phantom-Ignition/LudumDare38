@@ -62,6 +62,7 @@
     <Compile Include="Objects\GameHud.cs" />
     <Compile Include="Objects\GamePlanet.cs" />
     <Compile Include="Objects\Guns\Laser.cs" />
+    <Compile Include="Objects\Guns\LaserGun.cs" />
     <Compile Include="Objects\Guns\Shield.cs" />
     <Compile Include="Objects\ICollidableObject.cs" />
     <Compile Include="Objects\KillableObject.cs" />
