@@ -320,6 +320,16 @@ namespace LudumDare38.Scenes
                             shooter.ProjectilesQueued.Remove(proj);
                         }
                     }
+                    if (enemy.Type == EnemyType.TripleShooter)
+                    {
+                        var shooter = (TripleShooter)enemy;
+                        while (shooter.ProjectilesQueued.Count > 0)
+                        {
+                            var proj = shooter.ProjectilesQueued[0];
+                            _projectiles.Add(proj);
+                            shooter.ProjectilesQueued.Remove(proj);
+                        }
+                    }
                     else
                     {
                         ISuicidable enemySuicidable = enemy as ISuicidable;
@@ -411,6 +421,9 @@ namespace LudumDare38.Scenes
                         break;
                     case EnemyType.Shooter:
                         enemy = new Shooter(ImageManager.LoadEnemy("Shooter"));
+                        break;
+                    case EnemyType.TripleShooter:
+                        enemy = new TripleShooter(ImageManager.LoadEnemy("TripleShooter"));
                         break;
                 }
                 if (enemy != null)

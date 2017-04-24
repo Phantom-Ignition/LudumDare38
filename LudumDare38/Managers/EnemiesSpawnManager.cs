@@ -83,24 +83,24 @@ namespace LudumDare38.Managers
                 new List<EnemyModel> {
                     new  EnemyModel
                     {
-                        Type = EnemyType.Kamikaze,
+                        Type = EnemyType.TripleShooter,
                         Position = new Vector2(virtualSize.X, virtualSize.Y / 2)
-                    },/*
-                    new  EnemyModel
-                    {
-                        Type = EnemyType.Shooter,
-                        Position = new Vector2(-10, virtualSize.Y / 4)
                     },
                     new  EnemyModel
                     {
-                        Type = EnemyType.Shooter,
+                        Type = EnemyType.TripleShooter,
+                        Position = new Vector2(0, virtualSize.Y / 2)
+                    },
+                    new  EnemyModel
+                    {
+                        Type = EnemyType.TripleShooter,
                         Position = new Vector2(virtualSize.X / 2, 0)
                     },
                     new  EnemyModel
                     {
-                        Type = EnemyType.Shooter,
+                        Type = EnemyType.TripleShooter,
                         Position = new Vector2(virtualSize.X / 2, virtualSize.Y)
-                    }*/
+                    }
                 },
                 /*
                 // Wave #2

@@ -48,6 +48,7 @@
     <Compile Include="Characters\ISuicidable.cs" />
     <Compile Include="Characters\Kamikaze.cs" />
     <Compile Include="Characters\Player.cs" />
+    <Compile Include="Characters\TripleShooter.cs" />
     <Compile Include="Characters\Shooter.cs" />
     <Compile Include="Extensions\RectangleExtensions.cs" />
     <Compile Include="GameMain.cs" />

@@ -23,7 +23,9 @@ namespace LudumDare38.Characters
     {
         None,
         Kamikaze,
-        Shooter
+        Shooter,
+        TripleShooter,
+        Boss
     }
 
     abstract class EnemyBase : KillableObject, ICollidableObject
