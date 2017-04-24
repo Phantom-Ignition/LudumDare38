@@ -33,12 +33,13 @@ namespace LudumDare38.Managers
         //--------------------------------------------------
         // Spawn Rules
 
-        private List<List<EnemyModel>> _spawnRules;
-
         private List<EnemyType> _waveSpawnQueue;
-        private int _kamizakeCount;
+        private int _kamikazeCount;
+        public int KamikazeCount => _kamikazeCount;
         private int _shooterCount;
-        private int _increaseTurn;
+        public int ShooterCount => _shooterCount;
+        private int _bossCount;
+        public int BossCount => _bossCount;
 
         //--------------------------------------------------
         // Waves
@@ -69,63 +70,12 @@ namespace LudumDare38.Managers
             _spawnInterval = 200.0f;
 
             _currentSpawnInterval = 1500.0f; // TODO REMOVE THIS
-
-            CreateSpawnRules();
-            InitEnemiesCount();
-        }
-
-        private void CreateSpawnRules()
-        {
-            var virtualSize = SceneManager.Instance.VirtualSize;
-            _spawnRules = new List<List<EnemyModel>>
-            {
-                // Wave #1
-                new List<EnemyModel> {
-                    new  EnemyModel
-                    {
-                        Type = EnemyType.Kamikaze,
-                        Position = new Vector2(0, virtualSize.Y / 2)
-                    },
-                    /*
-                    new  EnemyModel
-                    {
-                        Type = EnemyType.TripleShooter,
-                        Position = new Vector2(0, virtualSize.Y / 2)
-                    },
-                    new  EnemyModel
-                    {
-                        Type = EnemyType.TripleShooter,
-                        Position = new Vector2(virtualSize.X / 2, 0)
-                    },
-                    new  EnemyModel
-                    {
-                        Type = EnemyType.TripleShooter,
-                        Position = new Vector2(virtualSize.X / 2, virtualSize.Y)
-                    }
-                    */
-                },
-                /*
-                // Wave #2
-                new List<EnemyModel> {
-                    new  EnemyModel
-                    {
-                        Type = EnemyType.Kamikaze,
-                        Position = new Vector2(0, virtualSize.Y / 2)
-                    },
-                }
-                */
-            };
-        }
-
-        private void InitEnemiesCount()
-        {
-            _kamizakeCount = 3;
-            _shooterCount = 2;
         }
 
         public void Start()
         {
             _active = true;
+            GenerateWave();
         }
 
         public void StartNextWave()
@@ -133,6 +83,7 @@ namespace LudumDare38.Managers
             _currentWave++;
             _active = true;
             _waveCompleted = false;
+            GenerateWave();
         }
 
         public EnemyModel ShiftModelFromQueue()
@@ -164,18 +115,6 @@ namespace LudumDare38.Managers
 
         private EnemyModel GetNextModel()
         {
-            if (_spawnRules.Count > 0)
-            {
-                var model = _spawnRules[0][0];
-                _spawnRules[0].RemoveAt(0);
-                if (_spawnRules[0].Count == 0)
-                {
-                    _spawnRules.RemoveAt(0);
-                    CompleteWave();
-                }
-                return model;
-            }
-
             return new EnemyModel
             {
                 Type = GetNextWaveEnemy(),
@@ -187,10 +126,6 @@ namespace LudumDare38.Managers
         {
             _waveCompleted = true;
             _active = false;
-            if (_spawnRules.Count == 0)
-            {
-                GenerateWave();
-            }
         }
 
         private EnemyType GetNextWaveEnemy()
@@ -200,7 +135,6 @@ namespace LudumDare38.Managers
             if (_waveSpawnQueue.Count == 0)
             {
                 CompleteWave();
-                GenerateWave();
             }
             return enemy;
         }
@@ -209,19 +143,76 @@ namespace LudumDare38.Managers
         {
             IncreaseDifficulty();
             _waveSpawnQueue.Clear();
-            for (var i = 0; i < _kamizakeCount; i++)
-                _waveSpawnQueue.Add(EnemyType.Kamikaze);
-            for (var i = 0; i < _shooterCount; i++)
-                _waveSpawnQueue.Add(EnemyType.Shooter);
+            if (_bossCount > 0)
+            {
+                for (var i = 0; i < _bossCount; i++)
+                    _waveSpawnQueue.Add(EnemyType.Boss);
+            }
+            else
+            {
+                for (var i = 0; i < _kamikazeCount; i++)
+                    _waveSpawnQueue.Add(EnemyType.Kamikaze);
+                for (var i = 0; i < _shooterCount; i++)
+                    _waveSpawnQueue.Add(EnemyType.Shooter);
+            }
             _waveSpawnQueue.Shuffle(_rand);
         }
 
         private void IncreaseDifficulty()
         {
             _spawnInterval = MathHelper.Max(_spawnInterval * 0.95f, 300.0f);
-            if (_increaseTurn == 0) _kamizakeCount++;
-            else _shooterCount++;
-            _increaseTurn = _increaseTurn == 0 ? 1 : 0;
+
+            var wave = _currentWave + 1;
+
+            if (wave <= 7)
+            {
+                switch (wave)
+                {
+                    case 1:
+                        _kamikazeCount = 1;
+                        _shooterCount = 0;
+                        break;
+                    case 2:
+                        _kamikazeCount = 2;
+                        _shooterCount = 0;
+                        break;
+                    case 3:
+                        _kamikazeCount = 4;
+                        _shooterCount = 0;
+                        break;
+                    case 4:
+                        _kamikazeCount = 0;
+                        _shooterCount = 1;
+                        break;
+                    case 5:
+                        _kamikazeCount = 2;
+                        _shooterCount = 1;
+                        break;
+                    case 6:
+                        _kamikazeCount = 0;
+                        _shooterCount = 0;
+                        _bossCount = 1;
+                        break;
+                    case 7:
+                        _kamikazeCount = 4;
+                        _shooterCount = 2;
+                        _bossCount = 0;
+                        break;
+                }
+            }
+            else
+            {
+                if (wave % 6 == 0)
+                {
+                    _bossCount = wave / 6;
+                }
+                else
+                {
+                    _bossCount = 0;
+                    _kamikazeCount = (int)(_kamikazeCount * 1.4);
+                    _shooterCount = (int)(_shooterCount * 1.4);
+                }
+            }
         }
 
         private Vector2 GetRandomPosition()

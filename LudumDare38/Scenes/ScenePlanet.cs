@@ -429,6 +429,10 @@ namespace LudumDare38.Scenes
             {
                 SceneManager.Instance.StartCameraShake(1, 500);
             }
+
+            DebugValues["current wave"] = (_enemiesSpawnManager.CurrentWave + 1).ToString();
+            DebugValues["kamikaze count"] = _enemiesSpawnManager.KamikazeCount.ToString();
+            DebugValues["shooter count"] = _enemiesSpawnManager.ShooterCount.ToString();
         }
 
         private void UpdateEnemiesSpawn(GameTime gameTime)

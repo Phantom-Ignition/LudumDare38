@@ -328,7 +328,7 @@ namespace LudumDare38.Scenes
                     var newOrbitFields = PlanetManager.Instance.AvailableOrbits.Where(of => of.OrbitLevel == orbitLevels[_orbitIndex]).ToList();
                     _angleIndex = newOrbitFields.FindIndex(of => of.Angle == lastAngle);
                     _placeholderGun.SetOrbitLevel(orbitLevels[_orbitIndex]);
-                    _placeholderGun.SetAngle(_angleIndex);
+                    _placeholderGun.SetAngle(lastAngle);
                 }
                 else
                 {
