@@ -127,27 +127,23 @@ namespace LudumDare38.Scenes
             _hudBackSprite.Position = new Vector2(-_hudBackSprite.TextureRegion.Width, -_hudBackSprite.TextureRegion.Height);
             _cursorSprite = new Sprite(ImageManager.LoadHudUpgrade("Cursor"));
 
-            var gold = PlanetManager.Instance.Gold;
             _guns = new GunsData[]
             {
                 new GunsData()
                 {
                     Price = 10,
-                    IsEnabled = gold >= 10,
                     Enabled = new Sprite(ImageManager.LoadHudUpgrade("GunEnabled")),
                     Disabled = new Sprite(ImageManager.LoadHudUpgrade("GunDisabled"))
                 },
                 new GunsData()
                 {
                     Price = 20,
-                    IsEnabled = gold >= 20,
                     Enabled = new Sprite(ImageManager.LoadHudUpgrade("LaserEnabled")),
                     Disabled = new Sprite(ImageManager.LoadHudUpgrade("LaserDisabled"))
                 },
                 new GunsData()
                 {
                     Price = 10,
-                    IsEnabled = gold >= 10,
                     Enabled = new Sprite(ImageManager.LoadHudUpgrade("ShieldEnabled")),
                     Disabled = new Sprite(ImageManager.LoadHudUpgrade("ShieldDisabled"))
                 }
@@ -162,10 +158,11 @@ namespace LudumDare38.Scenes
 
         private void RefreshGunsData()
         {
+            var gold = PlanetManager.Instance.Gold;
             var hasSpaceToMoreGuns = PlanetManager.Instance.AvailableOrbits.Length > 0;
             for (var i = 0; i < _guns.Length; i++)
             {
-                _guns[i].IsEnabled = _guns[i].IsEnabled && hasSpaceToMoreGuns;
+                _guns[i].IsEnabled = gold >= _guns[i].Price && hasSpaceToMoreGuns;
             }
         }
 

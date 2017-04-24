@@ -84,6 +84,7 @@ namespace LudumDare38.Characters
         // Gold drop
 
         protected int _gold;
+        public int Gold => _gold;
 
         //----------------------//------------------------//
 

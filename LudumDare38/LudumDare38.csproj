@@ -43,6 +43,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Characters\Boss.cs" />
     <Compile Include="Characters\CharacterBase.cs" />
     <Compile Include="Characters\EnemyBase.cs" />
     <Compile Include="Characters\ISuicidable.cs" />

@@ -41,7 +41,7 @@ namespace LudumDare38.Managers
         //--------------------------------------------------
         // Gold
 
-        public int Gold { get; set; } = 500;
+        public int Gold { get; set; } = 0;
 
         //--------------------------------------------------
         // Orbits
