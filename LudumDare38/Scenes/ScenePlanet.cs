@@ -301,15 +301,38 @@ namespace LudumDare38.Scenes
             _projectilesToRemove.Clear();
 
             // Update the enemies
+            var enemiesToAdd = new List<EnemyBase>();
             foreach (var enemy in _enemies)
             {
                 enemy.Update(gameTime);
+                if (!enemy.Alive)
+                {
+                    ISuicidable enemySuicidable = enemy as ISuicidable;
+                    if (enemySuicidable != null)
+                    {
+                        if (enemySuicidable.NeedCollectExplosionDamage())
+                        {
+                            _planet.GetDamaged(enemySuicidable.ContactDamage());
+                            enemySuicidable.CollectExplosionDamage();
+                        }
+                    }
+                }
                 if (enemy.RequestErase)
                 {
                     _enemiesToRemove.Add(enemy);
                 }
                 else if (!enemy.Dying && enemy.Alive)
                 {
+                    if (enemy.Type == EnemyType.Boss)
+                    {
+                        var boss = (Boss)enemy;
+                        while (boss.EnemiesQueued.Count > 0)
+                        {
+                            var newEnemy = boss.EnemiesQueued[0];
+                            enemiesToAdd.Add(newEnemy);
+                            boss.EnemiesQueued.Remove(newEnemy);
+                        }
+                    }
                     if (enemy.Type == EnemyType.Shooter)
                     {
                         var shooter = (Shooter)enemy;
@@ -320,7 +343,7 @@ namespace LudumDare38.Scenes
                             shooter.ProjectilesQueued.Remove(proj);
                         }
                     }
-                    if (enemy.Type == EnemyType.TripleShooter)
+                    else if (enemy.Type == EnemyType.TripleShooter)
                     {
                         var shooter = (TripleShooter)enemy;
                         while (shooter.ProjectilesQueued.Count > 0)
@@ -342,7 +365,7 @@ namespace LudumDare38.Scenes
                                 var cShield = (Shield)shield;
                                 if (cShield.Sprite.Alpha > 0.1f && CollisionHelper.IsColliding(cShield, enemy, out collisionPoint))
                                 {
-                                    cShield.GetDamaged(1);
+                                    cShield.GetDamaged(enemySuicidable.ContactDamage());
                                     enemySuicidable.Explode();
                                 }
                             }
@@ -357,7 +380,7 @@ namespace LudumDare38.Scenes
                             if (projectile.Subject == ProjectileSubject.FromPlayer &&
                                 CollisionHelper.IsColliding(projectile, enemy, out collisionPoint))
                             {
-                                enemy.GetShot(1, collisionPoint, projectile.Rotation());
+                                enemy.GetShot(projectile.Damage, collisionPoint, projectile.Rotation());
                                 projectile.Destroy();
                             }
                         }
@@ -368,6 +391,7 @@ namespace LudumDare38.Scenes
             // Clear the enemies
             _enemiesToRemove.ForEach(enemy => _enemies.Remove(enemy));
             _enemiesToRemove.Clear();
+            _enemies.AddRange(enemiesToAdd);
 
             // Update the wave system
             UpdateWave(gameTime);
@@ -424,6 +448,9 @@ namespace LudumDare38.Scenes
                         break;
                     case EnemyType.TripleShooter:
                         enemy = new TripleShooter(ImageManager.LoadEnemy("TripleShooter"));
+                        break;
+                    case EnemyType.Boss:
+                        enemy = new Boss(ImageManager.LoadEnemy("Boss"));
                         break;
                 }
                 if (enemy != null)

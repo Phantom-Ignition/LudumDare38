@@ -58,13 +58,11 @@ namespace LudumDare38.Characters
         private void QueueProjectile()
         {
             var rotation = _sprite.Rotation;
-            var sign = Math.Sign(Math.Cos(rotation));
-            var position = _position + new Vector2((float)Math.Cos(rotation) * 0, (float)Math.Sin(rotation) * 0);
             var rotationIncrease = (float)Math.PI / 10;
             for (var i = -1; i < 2; i++)
             {
                 var rot = _sprite.Rotation - rotationIncrease * i;
-                var proj = new GameProjectile(ProjectileType.AlienProjectile, position, rot, 2, 1, ProjectileSubject.FromEnemy);
+                var proj = new GameProjectile(ProjectileType.AlienProjectile, _position, rot, 2, 1, ProjectileSubject.FromEnemy);
                 _projectilesQueued.Add(proj);
             }
         }

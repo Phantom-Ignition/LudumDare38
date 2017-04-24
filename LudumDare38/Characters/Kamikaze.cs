@@ -14,6 +14,8 @@ namespace LudumDare38.Characters
         protected override float InitialImmunityTime => 50.0f;
         protected override HslColor EnemyColor => new HslColor(317, 0.55f, 0.39f);
 
+        private bool _needCollectExplosionDamage;
+
         public Kamikaze(Texture2D texture) : base(texture)
         {
             _hp = 3;
@@ -34,6 +36,21 @@ namespace LudumDare38.Characters
                 new Rectangle(200, 0, 100, 40),
                 new Rectangle(300, 0, 100, 40)
             });
+        }
+
+        public int ContactDamage()
+        {
+            return 1;
+        }
+
+        public void CollectExplosionDamage()
+        {
+            _needCollectExplosionDamage = false;
+        }
+
+        public bool NeedCollectExplosionDamage()
+        {
+            return _needCollectExplosionDamage;
         }
 
         public override void Update(GameTime gameTime)
@@ -66,6 +83,7 @@ namespace LudumDare38.Characters
 
         public void Explode()
         {
+            _needCollectExplosionDamage = true;
             GetDamaged(999);
         }
     }

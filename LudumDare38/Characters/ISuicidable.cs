@@ -8,6 +8,9 @@ namespace LudumDare38.Characters
 {
     interface ISuicidable
     {
+        int ContactDamage();
         void Explode();
+        bool NeedCollectExplosionDamage();
+        void CollectExplosionDamage();
     }
 }

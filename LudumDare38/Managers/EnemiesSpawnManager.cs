@@ -83,9 +83,10 @@ namespace LudumDare38.Managers
                 new List<EnemyModel> {
                     new  EnemyModel
                     {
-                        Type = EnemyType.TripleShooter,
-                        Position = new Vector2(virtualSize.X, virtualSize.Y / 2)
+                        Type = EnemyType.Boss,
+                        Position = new Vector2(0, virtualSize.Y / 2)
                     },
+                    /*
                     new  EnemyModel
                     {
                         Type = EnemyType.TripleShooter,
@@ -101,6 +102,7 @@ namespace LudumDare38.Managers
                         Type = EnemyType.TripleShooter,
                         Position = new Vector2(virtualSize.X / 2, virtualSize.Y)
                     }
+                    */
                 },
                 /*
                 // Wave #2
