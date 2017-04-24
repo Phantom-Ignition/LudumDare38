@@ -105,7 +105,7 @@ namespace LudumDare38.Characters
             var distanceToTarget = Math.Sqrt(Math.Pow(_target.X - _position.X, 2) + Math.Pow(_target.Y - _position.Y, 2));
             if (distanceToTarget > 230 || _shotCooldown > 0.0f)
             {
-                _position += _velocity * (distanceToTarget > 230 ? 5 : 0.8f);
+                _position += _velocity * (distanceToTarget > 230 ? 5 : 0.2f);
                 _sprite.Rotation = (float)Math.Atan2(_velocity.Y, _velocity.X);
             }
 

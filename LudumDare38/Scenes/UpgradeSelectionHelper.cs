@@ -5,6 +5,7 @@ using LudumDare38.Objects.Guns;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended.BitmapFonts;
 using MonoGame.Extended.Sprites;
 using System;
 using System.Collections.Generic;
@@ -47,6 +48,8 @@ namespace LudumDare38.Scenes
 
         private bool _complete;
         public bool Complete => _complete;
+
+        private bool _exiting;
 
         //--------------------------------------------------
         // Tweens
@@ -95,6 +98,7 @@ namespace LudumDare38.Scenes
         {
             _active = true;
             _complete = false;
+            _exiting = false;
 
             SetPhase(Phase.Buy);
 
@@ -266,6 +270,7 @@ namespace LudumDare38.Scenes
             }
             if (InputManager.Instace.KeyPressed(Keys.X))
             {
+                _exiting = true;
                 _complete = true;
                 Deactivate();
             }
@@ -360,9 +365,56 @@ namespace LudumDare38.Scenes
                 }
                 spriteBatch.Draw(_cursorSprite);
 
-                if (_phase == Phase.InstallGun)
+                var a = _selectionTween.CurrentTime / _selectionTween.Duration;
+                if (_exiting) a = 1 - a;
+
+                if (_phase == Phase.Buy)
+                {
+                    // Draw instructions
+                    var font = SceneManager.Instance.GameFontSmall;
+                    var texts = new string[]
+                    {
+                        "Use ← and → to move the cursor",
+                        "Press Z to select an equip",
+                        "Press X when you are done",
+                    };
+                    for (var i = 0; i < texts.Length; i++)
+                    {
+                        var posx = (SceneManager.Instance.VirtualSize.X - font.MeasureString(texts[i]).X) / 2;
+                        spriteBatch.DrawString(font, texts[i], new Vector2(posx, 20 + 25 * i), Color.White * a);
+                    }
+                }
+                else
                 {
                     _placeholderGun.Sprite.Draw(spriteBatch, _placeholderGun.Sprite.Position);
+
+                    // Draw instructions
+                    var font = SceneManager.Instance.GameFontSmall;
+                    var texts = new string[]
+                    {
+                        "Use ← and → to change the angle of",
+                        "the equip",
+                        "Press Z to buy the equip",
+                        "Press X to cancel",
+                    };
+                    for (var i = 0; i < texts.Length; i++)
+                    {
+                        var posx = (SceneManager.Instance.VirtualSize.X - font.MeasureString(texts[i]).X) / 2;
+                        var yInc = i == 1 ? 22 : 25;
+                        spriteBatch.DrawString(font, texts[i], new Vector2(posx, 20 + yInc * i), Color.White * a);
+                    }
+
+                    var bellowTexts = new string[]
+                    {
+                        "Use ↑ and ↓ to change the orbit of",
+                        "the equip (from 1 to 3)",
+                    };
+                    for (var i = 0; i < bellowTexts.Length; i++)
+                    {
+                        var posx = (SceneManager.Instance.VirtualSize.X - font.MeasureString(bellowTexts[i]).X) / 2;
+                        var yInc = i == 1 ? 22 : 25;
+                        spriteBatch.DrawString(font, bellowTexts[i], new Vector2(posx, 430 + yInc * i), Color.White * a);
+                    }
                 }
 
                 spriteBatch.End();

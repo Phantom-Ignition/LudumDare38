@@ -83,7 +83,7 @@ namespace LudumDare38.Managers
                 new List<EnemyModel> {
                     new  EnemyModel
                     {
-                        Type = EnemyType.Boss,
+                        Type = EnemyType.Kamikaze,
                         Position = new Vector2(0, virtualSize.Y / 2)
                     },
                     /*

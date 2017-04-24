@@ -103,7 +103,7 @@ namespace LudumDare38.Managers
         public BitmapFont GameFont => _gameFont;
 
         private BitmapFont _gameFontSmall;
-        public BitmapFont GameFontSmall => _gameFont;
+        public BitmapFont GameFontSmall => _gameFontSmall;
 
         //--------------------------------------------------
         // Debug mode
@@ -169,6 +169,14 @@ namespace LudumDare38.Managers
                 DebugMode = !DebugMode;
 
             _currentScene.Update(gameTime);
+            if (PlanetManager.Instance.Paused)
+            {
+                _bloomFilter.BloomStrengthMultiplier = 0.3f;
+            }
+            else
+            {
+                _bloomFilter.BloomStrengthMultiplier = 0.5f;
+            }
             UpdateCameraShake(gameTime);
         }
 

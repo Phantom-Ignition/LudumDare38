@@ -64,7 +64,7 @@ namespace LudumDare38.Characters
 
         private void UpdateMovement()
         {
-            _position += _velocity * 1;
+            _position += _velocity * 20;
 
             var distance = Math.Sqrt(Math.Pow(_target.X - _position.X, 2) + Math.Pow(_target.Y - _position.Y, 2));
             if (distance < GamePlanet.Radius + _sprite.GetColliderWidth() / 2)

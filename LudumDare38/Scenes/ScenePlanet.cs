@@ -497,6 +497,7 @@ namespace LudumDare38.Scenes
                     }
                     else
                     {
+                        PlanetManager.Instance.Paused = false;
                         _waveBackgroundAlphaTween.Start(0.5f, 0.0f, 500.0f, ScaleFuncs.Linear);
                         _waveInterval = false;
                         _waveIntervalTick = 0.0f;
@@ -520,6 +521,7 @@ namespace LudumDare38.Scenes
             {
                 if (_enemies.Count == 0 && _enemiesSpawnManager.WaveCompleted)
                 {
+                    PlanetManager.Instance.Paused = true;
                     _waveInterval = true;
                     _waveIntervalTick = 2000.0f;
                     _waveBackgroundAlphaTween.Start(0.0f, 0.5f, 500.0f, ScaleFuncs.Linear);

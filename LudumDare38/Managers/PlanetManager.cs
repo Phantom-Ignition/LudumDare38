@@ -41,7 +41,7 @@ namespace LudumDare38.Managers
         //--------------------------------------------------
         // Gold
 
-        public int Gold { get; set; } = 0;
+        public int Gold { get; set; } = 200;
 
         //--------------------------------------------------
         // Orbits
@@ -58,6 +58,11 @@ namespace LudumDare38.Managers
 
         private List<GameGunBase> _guns;
         public List<GameGunBase> GunsQueue =>_guns;
+
+        //--------------------------------------------------
+        // Paused
+
+        public bool Paused { get; set; }
 
         //----------------------//------------------------//
 
