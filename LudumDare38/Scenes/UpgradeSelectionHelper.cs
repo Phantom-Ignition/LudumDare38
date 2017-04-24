@@ -9,8 +9,6 @@ using MonoGame.Extended.Sprites;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LudumDare38.Scenes
 {
@@ -47,9 +45,8 @@ namespace LudumDare38.Scenes
         private bool _active;
         public bool IsActive => _active;
 
-        private bool _show;
-        private int _index;
-        private int[] _cursorIndexOffset;
+        private bool _complete;
+        public bool Complete => _complete;
 
         //--------------------------------------------------
         // Tweens
@@ -57,6 +54,7 @@ namespace LudumDare38.Scenes
         private List<ITween> _tweens;
         private Vector2Tween _selectionTween;
         private Vector2Tween _cursorTween;
+        private FloatTween _backgroundTween;
         private float _cursorFloatingAngle;
 
         //--------------------------------------------------
@@ -68,6 +66,12 @@ namespace LudumDare38.Scenes
             Buy,
             InstallGun
         }
+
+        //--------------------------------------------------
+        // Buy Phase
+
+        private int _cursorIndex;
+        private int[] _cursorIndexOffset;
 
         //--------------------------------------------------
         // Install Gun Phase
@@ -84,17 +88,30 @@ namespace LudumDare38.Scenes
             _selectionTween = new Vector2Tween();
             _cursorTween = new Vector2Tween();
             _cursorIndexOffset = new[] { -87, 0, 87 };
+            _backgroundTween = new FloatTween();
         }
 
         public void Activate()
         {
             _active = true;
-            _show = true;
+            _complete = false;
 
             SetPhase(Phase.Buy);
 
+            _backgroundTween.Start(0.0f, 0.5f, 1.0f, ScaleFuncs.Linear);
+
             _tweens.Add(_selectionTween);
             _tweens.Add(_cursorTween);
+            _tweens.Add(_backgroundTween);
+        }
+
+        public void Deactivate()
+        {
+            _active = false;
+            var igFrom = SceneManager.Instance.VirtualSize / 2 + 170 * Vector2.UnitY;
+            var igTo = SceneManager.Instance.VirtualSize / 2 + 340 * Vector2.UnitY;
+            _selectionTween.Start(igFrom, igTo, .5f, ScaleFuncs.SineEaseOut);
+            _backgroundTween.Start(0.5f, 0.0f, 1.0f, ScaleFuncs.Linear);
         }
 
         public void LoadContent()
@@ -104,9 +121,10 @@ namespace LudumDare38.Scenes
             _blackBackgroundSprite = new Sprite(bgTexture);
             _blackBackgroundSprite.Scale = SceneManager.Instance.VirtualSize;
             _blackBackgroundSprite.Position = SceneManager.Instance.VirtualSize / 2;
-            _blackBackgroundSprite.Alpha = 0.5f;
+            _blackBackgroundSprite.Alpha = 0.0f;
 
             _hudBackSprite = new Sprite(ImageManager.LoadHudUpgrade("Background"));
+            _hudBackSprite.Position = new Vector2(-_hudBackSprite.TextureRegion.Width, -_hudBackSprite.TextureRegion.Height);
             _cursorSprite = new Sprite(ImageManager.LoadHudUpgrade("Cursor"));
 
             var gold = PlanetManager.Instance.Gold;
@@ -134,6 +152,21 @@ namespace LudumDare38.Scenes
                     Disabled = new Sprite(ImageManager.LoadHudUpgrade("ShieldDisabled"))
                 }
             };
+            var texture = _guns[0].Enabled.TextureRegion.Texture; // All the images have the same height and width
+            for (var i = 0; i < _guns.Length; i++)
+            {
+                _guns[i].Enabled.Position = new Vector2(-texture.Width, -texture.Height);
+                _guns[i].Disabled.Position = new Vector2(-texture.Width, -texture.Height);
+            }
+        }
+
+        private void RefreshGunsData()
+        {
+            var hasSpaceToMoreGuns = PlanetManager.Instance.AvailableOrbits.Length > 0;
+            for (var i = 0; i < _guns.Length; i++)
+            {
+                _guns[i].IsEnabled = _guns[i].IsEnabled && hasSpaceToMoreGuns;
+            }
         }
 
         private void SetPhase(Phase phase)
@@ -145,6 +178,7 @@ namespace LudumDare38.Scenes
                     var from = SceneManager.Instance.VirtualSize / 2 + 255 * Vector2.UnitY;
                     var to = SceneManager.Instance.VirtualSize / 2 + 170 * Vector2.UnitY;
                     _selectionTween.Start(from, to, .5f, ScaleFuncs.SineEaseOut);
+                    RefreshGunsData();
                     break;
 
                 case Phase.InstallGun:
@@ -156,7 +190,7 @@ namespace LudumDare38.Scenes
                     _angleIndex = 0;
 
                     var firstOrbitField = PlanetManager.Instance.AvailableOrbits[0];
-                    switch (_index)
+                    switch (_cursorIndex)
                     {
                         case 0: _placeholderGun = new BasicGun(GunType.Basic, firstOrbitField); break;
                         case 1: _placeholderGun = new LaserGun(GunType.LaserGun, firstOrbitField); break;
@@ -168,8 +202,11 @@ namespace LudumDare38.Scenes
 
         public void Update(GameTime gameTime, float rotation, float floating)
         {
-            if (!_active) return;
+            if (!_active && _selectionTween.CurrentTime >= _selectionTween.Duration) return;
             var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            // Update tweens
+            _tweens.ForEach(tween => tween.Update(deltaTime));
 
             // Update position of layout
             var position = _selectionTween.CurrentValue;
@@ -180,11 +217,12 @@ namespace LudumDare38.Scenes
             }
 
             // Update position of the cursor
-            var vec = new Vector2(position.X + _cursorIndexOffset[_index], position.Y - 65 + (float)Math.Sin(_cursorFloatingAngle) * 5);
+            var vec = new Vector2(position.X + _cursorIndexOffset[_cursorIndex], position.Y - 65 + (float)Math.Sin(_cursorFloatingAngle) * 5);
             _cursorSprite.Position = vec;
             _cursorFloatingAngle = (_cursorFloatingAngle + (float)Math.PI / 180 * deltaTime * 500) % ((float)Math.PI * 2);
+            _cursorSprite.IsVisible = _guns.Any(gun => gun.IsEnabled);
 
-            // Update tweens
+            // Update input
             UpdateInput();
 
             // Update install gun
@@ -193,12 +231,13 @@ namespace LudumDare38.Scenes
                 _placeholderGun.Update(gameTime, rotation, floating);
             }
 
-            // Update tweens
-            _tweens.ForEach(tween => tween.Update(deltaTime));
+            // Update background
+            _blackBackgroundSprite.Alpha = _backgroundTween.CurrentValue;
         }
 
         private void UpdateInput()
         {
+            if (_complete) return;
             switch (_phase)
             {
                 case Phase.Buy:
@@ -212,28 +251,31 @@ namespace LudumDare38.Scenes
 
         private void UpdateBuyInput()
         {
-            var lastIndex = _index;
+            var lastIndex = _cursorIndex;
             if (InputManager.Instace.KeyPressed(Keys.Left))
             {
-                _index = _index - 1 < 0 ? 2 : _index - 1;
+                _cursorIndex = _cursorIndex - 1 < 0 ? 2 : _cursorIndex - 1;
             }
             if (InputManager.Instace.KeyPressed(Keys.Right))
             {
-                _index = _index + 1 > 2 ? 0 : _index + 1;
+                _cursorIndex = _cursorIndex + 1 > 2 ? 0 : _cursorIndex + 1;
             }
-            if (InputManager.Instace.KeyPressed(Keys.Enter))
+            if (InputManager.Instace.KeyPressed(Keys.Z))
             {
-                if (PlanetManager.Instance.Gold >= _guns[_index].Price)
+                if (_guns[_cursorIndex].IsEnabled)
                 {
-                    HandleGunBuy(_index);
+                    HandleGunBuy(_cursorIndex);
                 }
+            }
+            if (InputManager.Instace.KeyPressed(Keys.X))
+            {
+                _complete = true;
+                Deactivate();
             }
         }
 
         private void HandleGunBuy(int index)
         {
-            PlanetManager.Instance.Gold -= _guns[_index].Price;
-
             for (var i = 0; i < _guns.Length; i++)
             {
                 _guns[i].IsEnabled = PlanetManager.Instance.Gold >= _guns[i].Price;
@@ -281,9 +323,10 @@ namespace LudumDare38.Scenes
                 var newOrbitField = PlanetManager.Instance.Orbits[newAngleIndex + _orbitIndex * PlanetManager.Instance.NumPossibleAngles];
                 if (newOrbitField.Available)
                 {
-                    _placeholderGun.SetOrbitLevel(orbitLevels[_orbitIndex]);
                     var newOrbitFields = PlanetManager.Instance.AvailableOrbits.Where(of => of.OrbitLevel == orbitLevels[_orbitIndex]).ToList();
                     _angleIndex = newOrbitFields.FindIndex(of => of.Angle == lastAngle);
+                    _placeholderGun.SetOrbitLevel(orbitLevels[_orbitIndex]);
+                    _placeholderGun.SetAngle(_angleIndex);
                 }
                 else
                 {
@@ -292,20 +335,27 @@ namespace LudumDare38.Scenes
             }
 
             // Update Confirm
-            if (InputManager.Instace.KeyPressed(Keys.Enter))
+            if (InputManager.Instace.KeyPressed(Keys.Z))
+            {
+                PlanetManager.Instance.Gold -= _guns[_cursorIndex].Price;
+                PlanetManager.Instance.CreateGun(_placeholderGun);
+                _placeholderGun = null;
+                SetPhase(Phase.Buy);
+            }
+
+            // Update Cancel
+            if (InputManager.Instace.KeyPressed(Keys.X))
             {
                 SetPhase(Phase.Buy);
-                PlanetManager.Instance.CreateGun(_placeholderGun);
                 _placeholderGun = null;
             }
         }
 
         public void Draw(SpriteBatch spriteBatch, Matrix transformMatrix)
         {
-            if (_show)
+            if (_active || (!_active && _selectionTween.CurrentTime < _selectionTween.Duration))
             {
                 spriteBatch.Begin(transformMatrix: transformMatrix, samplerState: SamplerState.PointClamp);
-                spriteBatch.Draw(_blackBackgroundSprite);
                 spriteBatch.Draw(_hudBackSprite);
                 foreach (var gun in _guns)
                 {

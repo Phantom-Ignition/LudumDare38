@@ -10,6 +10,9 @@ using Microsoft.Xna.Framework.Input;
 using LudumDare38.Objects.Guns;
 using LudumDare38.Characters;
 using LudumDare38.Helpers;
+using MonoGame.Extended.BitmapFonts;
+using LudumDare38.Helpers.TinyTween;
+using MonoGame.Extended.Sprites;
 
 namespace LudumDare38.Scenes
 {
@@ -60,6 +63,32 @@ namespace LudumDare38.Scenes
         private EnemiesSpawnManager _enemiesSpawnManager;
 
         //--------------------------------------------------
+        // Wave Interval
+
+        private bool _waveInterval;
+        private float _waveIntervalTick;
+
+        //--------------------------------------------------
+        // Tweens
+
+        private List<ITween> _tweens;
+        private Vector2Tween _waveTextPositionTween;
+        private FloatTween _waveTextAlphaTween;
+        private FloatTween _waveBackgroundAlphaTween;
+        private FloatTween _planetRotationTween;
+
+        //--------------------------------------------------
+        // Wave Clear Text
+
+        private Sprite _waveClearBackgroundSprite;
+        private const string WaveClearText = "Wave Clear!";
+        private const string CurrentWaveText = "Wave #{0}";
+        private int _waveTextPhase;
+        private Vector2 _waveClearPosition;
+        private float _waveClearAlpha;
+        private int _waveTextsCompleted;
+
+        //--------------------------------------------------
         // Upgrade Helper
 
         private UpgradeSelectionHelper _upgradeSelectionHelper;
@@ -80,6 +109,7 @@ namespace LudumDare38.Scenes
             InitializeProjectiles();
             InitializeEnemies();
             InitializeSpawnManager();
+            InitializeWaveClear();
         }
 
         public override void UnloadContent()
@@ -109,10 +139,17 @@ namespace LudumDare38.Scenes
             _guns = new List<GameGunBase>();
             _gunsToRemove = new List<GameGunBase>();
 
+            _guns.Add(PlanetManager.Instance.CreateGun(new BasicGun(GunType.Basic, PlanetManager.Instance.AvailableOrbits[0])));
             /*
-            var basicOrbitField = PlanetManager.Instance.AvailableOrbits[0];
-            _guns.Add(PlanetManager.Instance.CreateGun(new BasicGun(GunType.Basic, basicOrbitField)));
+            _guns.Add(PlanetManager.Instance.CreateGun(new BasicGun(GunType.Basic, PlanetManager.Instance.AvailableOrbits[0])));
+            _guns.Add(PlanetManager.Instance.CreateGun(new BasicGun(GunType.Basic, PlanetManager.Instance.AvailableOrbits[0])));
+            _guns.Add(PlanetManager.Instance.CreateGun(new BasicGun(GunType.Basic, PlanetManager.Instance.AvailableOrbits[0])));
+            _guns.Add(PlanetManager.Instance.CreateGun(new BasicGun(GunType.Basic, PlanetManager.Instance.AvailableOrbits[0])));
+            _guns.Add(PlanetManager.Instance.CreateGun(new BasicGun(GunType.Basic, PlanetManager.Instance.AvailableOrbits[0])));
+            _guns.Add(PlanetManager.Instance.CreateGun(new BasicGun(GunType.Basic, PlanetManager.Instance.AvailableOrbits[0])));
+            _guns.Add(PlanetManager.Instance.CreateGun(new BasicGun(GunType.Basic, PlanetManager.Instance.AvailableOrbits[0])));
 
+            /*
             var aorbitField = PlanetManager.Instance.AvailableOrbits[0];
             _guns.Add(PlanetManager.Instance.CreateGun(new LaserGun(GunType.LaserGun, aorbitField)));
 
@@ -140,11 +177,41 @@ namespace LudumDare38.Scenes
             _enemiesSpawnManager.Start();
         }
 
+        private void InitializeWaveClear()
+        {
+            var viewportSize = SceneManager.Instance.VirtualSize;
+
+            var bgTexture = new Texture2D(SceneManager.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            bgTexture.SetData(new Color[] { Color.Black });
+            _waveClearBackgroundSprite = new Sprite(bgTexture);
+            _waveClearBackgroundSprite.Scale = viewportSize;
+            _waveClearBackgroundSprite.Position = viewportSize / 2;
+            _waveClearBackgroundSprite.Alpha = 0.0f;
+
+            _waveTextPositionTween = new Vector2Tween();
+            _waveTextAlphaTween = new FloatTween();
+            _waveBackgroundAlphaTween = new FloatTween();
+            _planetRotationTween = new FloatTween();
+
+            _tweens = new List<ITween>();
+            _tweens.Add(_waveTextPositionTween);
+            _tweens.Add(_waveTextAlphaTween);
+            _tweens.Add(_waveBackgroundAlphaTween);
+            _tweens.Add(_planetRotationTween);
+        }
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
 
             var deltaTime = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+
+            // Update tweens
+            _tweens.ForEach(tween => tween.Update(deltaTime));
+            if (_planetRotationTween.State == TweenState.Running)
+            {
+                _rotation = _planetRotationTween.CurrentValue;
+            }
 
             // Update the planet
             float floating;
@@ -190,27 +257,9 @@ namespace LudumDare38.Scenes
                 }
             }
 
-            if (_upgradeSelectionHelper.IsActive) return;
-
             // Clear the projectiles
             _gunsToRemove.ForEach(gun => _guns.Remove(gun));
             _gunsToRemove.Clear();
-
-            // Shot!
-            if (InputManager.Instace.KeyPressed(Keys.Z))
-            {
-                foreach (var gun in _guns)
-                {
-                    if (!gun.Static && gun.CurrentCooldown == 0.0f)
-                    {
-                        GameProjectile newProjectile;
-                        if (gun.Shot(out newProjectile))
-                        {
-                            _projectiles.Add(newProjectile);
-                        }
-                    }
-                }
-            }
 
             // Update the projectiles
             foreach (var projectile in _projectiles)
@@ -310,11 +359,32 @@ namespace LudumDare38.Scenes
             _enemiesToRemove.ForEach(enemy => _enemies.Remove(enemy));
             _enemiesToRemove.Clear();
 
-            // Update the enemy spawn manager
-            UpdateEnemiesSpawn(gameTime);
+            // Update the wave system
+            UpdateWave(gameTime);
 
             // Update the Hud
             _gameHud.CurrentHP = _planet.HP;
+
+            if (_upgradeSelectionHelper.IsActive || _waveInterval) return;
+
+            // Update the enemy spawn manager
+            UpdateEnemiesSpawn(gameTime);
+
+            // Shot!
+            if (InputManager.Instace.KeyPressed(Keys.Z))
+            {
+                foreach (var gun in _guns)
+                {
+                    if (!gun.Static && gun.CurrentCooldown == 0.0f)
+                    {
+                        GameProjectile newProjectile;
+                        if (gun.Shot(out newProjectile))
+                        {
+                            _projectiles.Add(newProjectile);
+                        }
+                    }
+                }
+            }
 
             // Update the rotation
             if (InputManager.Instace.KeyDown(Keys.Left))
@@ -325,8 +395,6 @@ namespace LudumDare38.Scenes
             {
                 SceneManager.Instance.StartCameraShake(1, 500);
             }
-
-            _upgradeSelectionHelper.Activate();
         }
 
         private void UpdateEnemiesSpawn(GameTime gameTime)
@@ -356,6 +424,76 @@ namespace LudumDare38.Scenes
             }
         }
 
+        private void UpdateWave(GameTime gameTime)
+        {
+            if (_waveInterval)
+            {
+                if (_waveTextPhase == 0)
+                {
+                    var viewportSize = SceneManager.Instance.VirtualSize;
+                    var textWidth = SceneManager.Instance.GameFont.MeasureString(WaveText()).X;
+                    var positionFrom = new Vector2((viewportSize.X - textWidth) / 2, viewportSize.Y / 2 - 100);
+                    var positionTo = new Vector2((viewportSize.X - textWidth) / 2, viewportSize.Y / 2 - 15);
+                    _waveTextPositionTween.Start(positionFrom, positionTo, 1500.0f, ScaleFuncs.QuadraticEaseInOut);
+                    _waveTextAlphaTween.Start(0.0f, 1.0f, 1500.0f, ScaleFuncs.Linear);
+                    _waveTextPhase = 1;
+                    return;
+                }
+                _waveIntervalTick -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                if (_waveTextPhase == 3 && _upgradeSelectionHelper.Complete)
+                {
+                    _waveTextsCompleted++;
+                    _waveTextPhase = 0;
+                    _upgradeSelectionHelper.Deactivate();
+                    _waveIntervalTick = 2000.0f;
+                }
+                else if (_waveTextPhase == 2 && _waveIntervalTick <= 0.0f)
+                {
+                    _waveTextPhase = 3;
+                    if (_waveTextsCompleted == 0)
+                    {
+                        _upgradeSelectionHelper.Activate();
+                        _enemiesSpawnManager.StartNextWave();
+                    }
+                    else
+                    {
+                        _waveBackgroundAlphaTween.Start(0.5f, 0.0f, 500.0f, ScaleFuncs.Linear);
+                        _waveInterval = false;
+                        _waveIntervalTick = 0.0f;
+                        _waveTextsCompleted = 0;
+                        _waveTextPhase = 0;
+                    }
+                }
+                else if (_waveTextPhase == 1 && _waveIntervalTick <= 500.0f)
+                {
+                    _waveTextPhase = 2;
+                    _waveTextAlphaTween.Start(1.0f, 0.0f, 500.0f, ScaleFuncs.Linear);
+                    
+                    var viewportSize = SceneManager.Instance.VirtualSize;
+                    var textWidth = SceneManager.Instance.GameFont.MeasureString(WaveText()).X;
+                    var positionFrom = new Vector2((viewportSize.X - textWidth) / 2, viewportSize.Y / 2 - 15);
+                    var positionTo = new Vector2((viewportSize.X - textWidth) / 2, viewportSize.Y / 2 + 50);
+                    _waveTextPositionTween.Start(positionFrom, positionTo, 500.0f, ScaleFuncs.QuadraticEaseIn);
+                }
+            }
+            else
+            {
+                if (_enemies.Count == 0 && _enemiesSpawnManager.WaveCompleted)
+                {
+                    _waveInterval = true;
+                    _waveIntervalTick = 2000.0f;
+                    _waveBackgroundAlphaTween.Start(0.0f, 0.5f, 500.0f, ScaleFuncs.Linear);
+                    _waveTextPhase = 0;
+                    _waveClearAlpha = 0.0f;
+                    _planetRotationTween.Start(_rotation, 0.0f, 1000.0f, ScaleFuncs.CubicEaseInOut);
+                }
+            }
+
+            _waveClearPosition = _waveTextPositionTween.CurrentValue;
+            _waveClearAlpha = _waveTextAlphaTween.CurrentValue;
+            _waveClearBackgroundSprite.Alpha = _waveBackgroundAlphaTween.CurrentValue;
+        }
+
         public override void Draw(SpriteBatch spriteBatch, Matrix transformMatrix)
         {
             // Draw the HUD
@@ -377,10 +515,22 @@ namespace LudumDare38.Scenes
             _projectiles.ForEach(projectile => projectile.Sprite.Draw(spriteBatch, projectile.Position));
             spriteBatch.End();
 
+            // Draw the wave text
+            spriteBatch.Begin(transformMatrix: transformMatrix, samplerState: SamplerState.PointClamp);
+            spriteBatch.Draw(_waveClearBackgroundSprite);
+            spriteBatch.DrawString(SceneManager.Instance.GameFont, WaveText(), _waveClearPosition + 1 * Vector2.UnitY, Color.Black * _waveClearAlpha);
+            spriteBatch.DrawString(SceneManager.Instance.GameFont, WaveText(), _waveClearPosition, Color.White * _waveClearAlpha);
+            spriteBatch.End();
+
             // Draw the upgrade helper
             _upgradeSelectionHelper.Draw(spriteBatch, transformMatrix);
 
             base.Draw(spriteBatch, transformMatrix);
+        }
+
+        private string WaveText()
+        {
+            return _waveTextsCompleted < 1 ? WaveClearText : String.Format(CurrentWaveText, _enemiesSpawnManager.CurrentWave + 1);
         }
     }
 }

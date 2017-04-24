@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Sprites;
 using MonoGame.Extended.ViewportAdapters;
 using LudumDare38.Helpers;
+using MonoGame.Extended.BitmapFonts;
 
 namespace LudumDare38.Managers
 {
@@ -96,6 +97,15 @@ namespace LudumDare38.Managers
         private Random _rand;
 
         //--------------------------------------------------
+        // Game fonts
+
+        private BitmapFont _gameFont;
+        public BitmapFont GameFont => _gameFont;
+
+        private BitmapFont _gameFontSmall;
+        public BitmapFont GameFontSmall => _gameFont;
+
+        //--------------------------------------------------
         // Debug mode
 
         public bool DebugMode { get; set; } = false;
@@ -128,6 +138,9 @@ namespace LudumDare38.Managers
             _transitionImage.Scale = new Vector2(VirtualSize.X, VirtualSize.Y);
             _transitionImage.Alpha = 0.0f;
             _transitionImage.IsVisible = false;
+
+            _gameFont = Content.Load<BitmapFont>("fonts/MediumFont");
+            _gameFontSmall = Content.Load<BitmapFont>("fonts/SmallFont");
 
             _scanlinesEffect = EffectManager.Load("Scanlines");
             _scanlinesEffect.Parameters["Attenuation"].SetValue(0.04f);
@@ -222,9 +235,9 @@ namespace LudumDare38.Managers
 
         public void StartCameraShake(float magnitude, float duration)
         {
+            _shakeMagnitude = _shakeEnabled ? _shakeMagnitude + magnitude * 0.1f : magnitude;
             _shakeEnabled = true;
             _shakeElapsed = 0;
-            _shakeMagnitude = magnitude;
             _shakeDuration = duration;
         }
 

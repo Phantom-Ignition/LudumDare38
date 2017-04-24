@@ -3,21 +3,9 @@ using Microsoft.Xna.Framework;
 using MonoGame.Extended.Collections;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LudumDare38.Managers
 {
-    //--------------------------------------------------
-    // Side
-
-    public enum Side
-    {
-        Left,
-        Right
-    }
-
     class EnemiesSpawnManager
     {
         //--------------------------------------------------
@@ -95,9 +83,9 @@ namespace LudumDare38.Managers
                 new List<EnemyModel> {
                     new  EnemyModel
                     {
-                        Type = EnemyType.Shooter,
-                        Position = new Vector2(virtualSize.X, virtualSize.Y / 4)
-                    },
+                        Type = EnemyType.Kamikaze,
+                        Position = new Vector2(virtualSize.X, virtualSize.Y / 2)
+                    },/*
                     new  EnemyModel
                     {
                         Type = EnemyType.Shooter,
@@ -112,8 +100,9 @@ namespace LudumDare38.Managers
                     {
                         Type = EnemyType.Shooter,
                         Position = new Vector2(virtualSize.X / 2, virtualSize.Y)
-                    }
+                    }*/
                 },
+                /*
                 // Wave #2
                 new List<EnemyModel> {
                     new  EnemyModel
@@ -122,6 +111,7 @@ namespace LudumDare38.Managers
                         Position = new Vector2(0, virtualSize.Y / 2)
                     },
                 }
+                */
             };
         }
 
@@ -235,8 +225,28 @@ namespace LudumDare38.Managers
         private Vector2 GetRandomPosition()
         {
             var size = SceneManager.Instance.VirtualSize;
-            var x = _rand.Next(0, (int)size.X);
-            var y = _rand.Next(0, (int)size.Y);
+            var side = _rand.Next(4); // Top, right, bottom and left
+            var x = 0;
+            var y = 0;
+            switch (side)
+            {
+                case 0:
+                    x = _rand.Next(0, (int)size.X);
+                    y = 0;
+                    break;
+                case 1:
+                    x = (int)size.X;
+                    y = _rand.Next(0, (int)size.Y);
+                    break;
+                case 2:
+                    x = _rand.Next(0, (int)size.X);
+                    y = (int)size.Y;
+                    break;
+                case 3:
+                    x = 0;
+                    y = _rand.Next(0, (int)size.Y);
+                    break;
+            }
             return new Vector2(x, y);
         }
     }

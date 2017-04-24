@@ -71,7 +71,7 @@ namespace LudumDare38.Objects.Guns
             var orbitLevel = _orbitField.OrbitLevel;
             var floatingMultiplier = (orbitLevel) * 1.1f;
             var center = SceneManager.Instance.VirtualSize / 2;
-            rotation = (3 - orbitLevel) * rotation;
+            rotation = Math.Max((3 - orbitLevel), 0.7f) * rotation;
             rotation += _orbitField.Angle;
             var orbitDistance = 17 + orbitLevel * 30;
             var position = center + new Vector2(orbitDistance * (float)Math.Cos(rotation), orbitDistance * (float)Math.Sin(rotation)) +

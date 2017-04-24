@@ -41,7 +41,7 @@ namespace LudumDare38.Managers
         //--------------------------------------------------
         // Gold
 
-        public int Gold { get; set; } = 250;
+        public int Gold { get; set; } = 500;
 
         //--------------------------------------------------
         // Orbits
@@ -50,7 +50,7 @@ namespace LudumDare38.Managers
         public OrbitField[] Orbits => _orbits;
         public OrbitField[] AvailableOrbits => _orbits.Where(of => of.Available).ToArray();
 
-        private float[] _possibleAngles;
+        private float[] _possibleAngles;        
         public int NumPossibleAngles => _possibleAngles.Length;
 
         //--------------------------------------------------

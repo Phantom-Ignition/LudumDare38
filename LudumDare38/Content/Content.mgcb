@@ -349,3 +349,37 @@
 /processorParam:TextureFormat=Color
 /build:imgs/hud/upgrade/Cursor.png
 
+#begin fonts/MediumFont_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/MediumFont_0.png
+
+#begin fonts/MediumFont.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/MediumFont.fnt
+
+#begin fonts/SmallFont.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:fonts/SmallFont.fnt
+
+#begin fonts/SmallFont_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fonts/SmallFont_0.png
+
