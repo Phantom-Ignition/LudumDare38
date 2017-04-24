@@ -18,11 +18,13 @@ namespace LudumDare38.Objects.Guns
     {
         protected GunType _gunType;
         public GunType GunType => _gunType;
-
-        protected int _orbitLevel;
+        
         protected float _angle;
         protected CharacterSprite _sprite;
         public CharacterSprite Sprite => _sprite;
+
+        private OrbitField _orbitField;
+        public OrbitField OrbitField => _orbitField;
         
         //--------------------------------------------------
         // Cooldown
@@ -38,11 +40,10 @@ namespace LudumDare38.Objects.Guns
 
         //----------------------//------------------------//
 
-        public GameGunBase(int orbitLevel, GunType gunType, float angle)
+        public GameGunBase(GunType gunType, OrbitField orbitField)
         {
-            _orbitLevel = orbitLevel;
+            _orbitField = orbitField;
             _gunType = gunType;
-            _angle = angle;
             _currentCooldown = 0;
             CreateSprite();
         }
@@ -55,13 +56,24 @@ namespace LudumDare38.Objects.Guns
             return false;
         }
 
+        public void SetOrbitLevel(int orbitLevel)
+        {
+            _orbitField.OrbitLevel = orbitLevel;
+        }
+
+        public void SetAngle(float angle)
+        {
+            _orbitField.Angle = angle;
+        }
+
         public virtual void Update(GameTime gameTime, float rotation, float floating)
         {
-            var floatingMultiplier = (_orbitLevel) * 1.1f;
+            var orbitLevel = _orbitField.OrbitLevel;
+            var floatingMultiplier = (orbitLevel) * 1.1f;
             var center = SceneManager.Instance.VirtualSize / 2;
-            rotation = (3 - _orbitLevel) * rotation;
-            rotation += _angle;
-            var orbitDistance = 17 + _orbitLevel * 30;
+            rotation = (3 - orbitLevel) * rotation;
+            rotation += _orbitField.Angle;
+            var orbitDistance = 17 + orbitLevel * 30;
             var position = center + new Vector2(orbitDistance * (float)Math.Cos(rotation), orbitDistance * (float)Math.Sin(rotation)) +
                 floating * floatingMultiplier * Vector2.UnitY;
 

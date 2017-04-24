@@ -22,6 +22,7 @@ namespace LudumDare38.Characters
         public Shooter(Texture2D texture) : base(texture)
         {
             _hp = 6;
+            _gold = 10;
             _projectilesQueued = new List<GameProjectile>();
         }
 
@@ -119,7 +120,7 @@ namespace LudumDare38.Characters
             _sprite.Effect = SpriteEffects.None;
             if (_velocity.X < 0)
             {
-                //_sprite.Effect = SpriteEffects.FlipVertically;
+                _sprite.Effect = SpriteEffects.FlipVertically;
             }
         }
     }

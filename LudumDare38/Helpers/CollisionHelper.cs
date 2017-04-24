@@ -93,9 +93,7 @@ namespace LudumDare38.Helpers
                         if (colorA.A != 0 && colorB.A != 0)
                         {
                             // then an intersection has been found
-                            var x = transformA.Translation.X;
-                            var y = transformA.Translation.Y;
-                            collisionPoint = new Vector2(x, y);
+                            collisionPoint = new Vector2(transformA.Translation.X, transformA.Translation.Y);
                             return true;
                         }
                     }

@@ -54,11 +54,13 @@
     <Compile Include="Helpers\BloomFilter.cs" />
     <Compile Include="Helpers\CollisionHelper.cs" />
     <Compile Include="Helpers\QuadRenderer.cs" />
+    <Compile Include="Helpers\TinyTween.cs" />
     <Compile Include="Managers\EffectManager.cs" />
     <Compile Include="Managers\EnemiesSpawnManager.cs" />
     <Compile Include="Managers\ImageManager.cs" />
     <Compile Include="Managers\InputManager.cs" />
     <Compile Include="Managers\MapManager.cs" />
+    <Compile Include="Managers\PlanetManager.cs" />
     <Compile Include="Managers\SceneManager.cs" />
     <Compile Include="Objects\GameProjectile.cs" />
     <Compile Include="Objects\Guns\BasicGun.cs" />
@@ -78,6 +80,7 @@
     <Compile Include="Scenes\SceneBase.cs" />
     <Compile Include="Scenes\SceneMap.cs" />
     <Compile Include="Scenes\ScenePlanet.cs" />
+    <Compile Include="Scenes\UpgradeSelectionHelper.cs" />
     <Compile Include="Sprites\CharacterSprite.cs" />
     <Compile Include="Sprites\FrameInfo.cs" />
     <Compile Include="Sprites\FramesList.cs" />

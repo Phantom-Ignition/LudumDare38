@@ -26,6 +26,11 @@ namespace LudumDare38.Managers
             return LoadBitmap("imgs/hud/" + filename);
         }
 
+        public static Texture2D LoadHudUpgrade(string filename)
+        {
+            return LoadBitmap("imgs/hud/upgrade/" + filename);
+        }
+
         public static Texture2D LoadGun(string filename)
         {
             return LoadBitmap("imgs/guns/" + filename);

@@ -13,7 +13,7 @@ namespace LudumDare38.Objects.Guns
         private KillableObject _killableObject;
         public bool RequestingErase => _killableObject.RequestErase;
 
-        public Shield(int orbitLevel, GunType gunType, float angle) : base(orbitLevel, gunType, angle)
+        public Shield(GunType gunType, OrbitField orbitField) : base(gunType, orbitField)
         {
             Static = true;
             _killableObject = new KillableObject(3);

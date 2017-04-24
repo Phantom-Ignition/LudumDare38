@@ -59,6 +59,11 @@ namespace LudumDare38.Scenes
 
         private EnemiesSpawnManager _enemiesSpawnManager;
 
+        //--------------------------------------------------
+        // Upgrade Helper
+
+        private UpgradeSelectionHelper _upgradeSelectionHelper;
+
         //----------------------//------------------------//
 
         public override void LoadContent()
@@ -66,6 +71,8 @@ namespace LudumDare38.Scenes
             base.LoadContent();
 
             _rand = new Random();
+            _upgradeSelectionHelper = new UpgradeSelectionHelper();
+            _upgradeSelectionHelper.LoadContent();
 
             CreatePlanet();
             CreateHud();
@@ -73,6 +80,12 @@ namespace LudumDare38.Scenes
             InitializeProjectiles();
             InitializeEnemies();
             InitializeSpawnManager();
+        }
+
+        public override void UnloadContent()
+        {
+            base.UnloadContent();
+            _upgradeSelectionHelper.Dispose();
         }
 
         private void CreatePlanet()
@@ -94,10 +107,17 @@ namespace LudumDare38.Scenes
         private void CreateGuns()
         {
             _guns = new List<GameGunBase>();
-            _guns.Add(new BasicGun(1, GunType.Basic, 0.0f));
-            _guns.Add(new LaserGun(1, GunType.LaserGun, (float)Math.PI));
-            _guns.Add(new Shield(2, GunType.Shield, (float)Math.PI * 0.5f));
             _gunsToRemove = new List<GameGunBase>();
+
+            /*
+            var basicOrbitField = PlanetManager.Instance.AvailableOrbits[0];
+            _guns.Add(PlanetManager.Instance.CreateGun(new BasicGun(GunType.Basic, basicOrbitField)));
+
+            var aorbitField = PlanetManager.Instance.AvailableOrbits[0];
+            _guns.Add(PlanetManager.Instance.CreateGun(new LaserGun(GunType.LaserGun, aorbitField)));
+
+            var borbitField = PlanetManager.Instance.AvailableOrbits[0];
+            _guns.Add(PlanetManager.Instance.CreateGun(new Shield(GunType.Shield, borbitField)));*/
         }
 
         private void InitializeProjectiles()
@@ -129,6 +149,17 @@ namespace LudumDare38.Scenes
             // Update the planet
             float floating;
             _planet.Update(gameTime, out floating);
+            
+            // Update the upgrade selection
+            _upgradeSelectionHelper.Update(gameTime, _rotation, floating);
+
+            // Update the PlanetManager guns queue
+            while (PlanetManager.Instance.GunsQueue.Count > 0)
+            {
+                var gun = PlanetManager.Instance.GunsQueue[0];
+                _guns.Add(gun);
+                PlanetManager.Instance.GunsQueue.Remove(gun);
+            }
 
             // Update the guns
             foreach (var gun in _guns)
@@ -159,11 +190,14 @@ namespace LudumDare38.Scenes
                 }
             }
 
+            if (_upgradeSelectionHelper.IsActive) return;
+
             // Clear the projectiles
             _gunsToRemove.ForEach(gun => _guns.Remove(gun));
             _gunsToRemove.Clear();
 
-            if (InputManager.Instace.KeyPressed(Keys.S))
+            // Shot!
+            if (InputManager.Instace.KeyPressed(Keys.Z))
             {
                 foreach (var gun in _guns)
                 {
@@ -291,6 +325,8 @@ namespace LudumDare38.Scenes
             {
                 SceneManager.Instance.StartCameraShake(1, 500);
             }
+
+            _upgradeSelectionHelper.Activate();
         }
 
         private void UpdateEnemiesSpawn(GameTime gameTime)
@@ -340,6 +376,9 @@ namespace LudumDare38.Scenes
             spriteBatch.Begin(transformMatrix: transformMatrix, samplerState: SamplerState.PointClamp);
             _projectiles.ForEach(projectile => projectile.Sprite.Draw(spriteBatch, projectile.Position));
             spriteBatch.End();
+
+            // Draw the upgrade helper
+            _upgradeSelectionHelper.Draw(spriteBatch, transformMatrix);
 
             base.Draw(spriteBatch, transformMatrix);
         }

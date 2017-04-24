@@ -8,7 +8,7 @@ namespace LudumDare38.Objects.Guns
 {
     class BasicGun : GameGunBase
     {
-        public BasicGun(int orbitLevel, GunType gunType, float angle) : base(orbitLevel, gunType, angle)
+        public BasicGun(GunType gunType, OrbitField orbitField) : base(gunType, orbitField)
         {
             _cooldown = 90.0f;
         }

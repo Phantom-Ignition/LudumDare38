@@ -19,7 +19,7 @@ namespace LudumDare38.Objects.Guns
         
         private bool _isShooting;
 
-        public LaserGun(int orbitLevel, GunType gunType, float angle) : base(orbitLevel, gunType, angle)
+        public LaserGun(GunType gunType, OrbitField orbitField) : base(gunType, orbitField)
         {
             _cooldown = 1200.0f;
             CreateLaser();

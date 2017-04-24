@@ -78,6 +78,11 @@ namespace LudumDare38.Characters
         protected ParticleEffect _shotParticles;
         protected ParticleEffect _deathParticles;
 
+        //--------------------------------------------------
+        // Gold drop
+
+        protected int _gold;
+
         //----------------------//------------------------//
 
         public EnemyBase(Texture2D texture)
@@ -142,7 +147,7 @@ namespace LudumDare38.Characters
                     TextureRegion = new TextureRegion2D(_particlesTexture),
                     Parameters = new ParticleReleaseParameters()
                     {
-                        Speed = new RangeF(100f, 150f),
+                        Speed = new RangeF(70f, 100f),
                         Quantity = 10,
                         Rotation = new RangeF(-1f, 1f),
                         Scale = new RangeF(2.0f, 4.5f),
@@ -174,6 +179,7 @@ namespace LudumDare38.Characters
             base.OnDeath();
             _deathParticles.Trigger(_position);
             SceneManager.Instance.StartCameraShake(3, 500);
+            PlanetManager.Instance.Gold += _gold;
         }
 
         public virtual void GetShot(int damage, Vector2 point, float shotRotation)
@@ -253,6 +259,23 @@ namespace LudumDare38.Characters
                 textureData,
                 0,
                 textureData.Length);
+            if (_sprite.Effect == SpriteEffects.FlipVertically)
+            {
+                // Thanks to Ellye!
+                Color[] flipData = new Color[frameRect.Width * frameRect.Height];
+                int indexOld = 0;
+                int indexNew = 0;
+                for (int row = 0; row < frameRect.Height; row++)
+                {
+                    for (int col = 0; col < frameRect.Width; col++)
+                    {
+                        indexOld = (frameRect.Width * (frameRect.Height - 1 - row)) + col;
+                        flipData[indexNew] = textureData[indexOld];
+                        indexNew++;
+                    }
+                }
+                textureData = flipData;
+            }
             return textureData;
         }
 

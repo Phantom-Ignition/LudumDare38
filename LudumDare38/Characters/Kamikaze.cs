@@ -17,6 +17,7 @@ namespace LudumDare38.Characters
         public Kamikaze(Texture2D texture) : base(texture)
         {
             _hp = 3;
+            _gold = 5;
         }
 
         protected override void CreateSprite(Texture2D texture)
