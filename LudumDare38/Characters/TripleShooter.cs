@@ -8,6 +8,8 @@ using MonoGame.Extended.Particles;
 using LudumDare38.Objects;
 using Microsoft.Xna.Framework;
 using LudumDare38.Sprites;
+using Microsoft.Xna.Framework.Audio;
+using LudumDare38.Managers;
 
 namespace LudumDare38.Characters
 {
@@ -18,6 +20,7 @@ namespace LudumDare38.Characters
         protected override HslColor EnemyColor => new HslColor(317, 0.55f, 0.39f);
 
         private float _shotCooldown;
+        private SoundEffect _shotSe;
 
         private List<GameProjectile> _projectilesQueued;
         public List<GameProjectile> ProjectilesQueued => _projectilesQueued;
@@ -27,6 +30,7 @@ namespace LudumDare38.Characters
             _hp = 2;
             _gold = 5;
             _projectilesQueued = new List<GameProjectile>();
+            _shotSe = SoundManager.LoadSe("Alien_atk");
         }
 
         protected override void CreateSprite(Texture2D texture)
@@ -57,6 +61,7 @@ namespace LudumDare38.Characters
 
         private void QueueProjectile()
         {
+            _shotSe.PlaySafe();
             var rotation = _sprite.Rotation;
             var rotationIncrease = (float)Math.PI / 10;
             for (var i = -1; i < 2; i++)

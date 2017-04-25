@@ -64,6 +64,7 @@
     <Compile Include="Managers\MapManager.cs" />
     <Compile Include="Managers\PlanetManager.cs" />
     <Compile Include="Managers\SceneManager.cs" />
+    <Compile Include="Managers\SoundManager.cs" />
     <Compile Include="Objects\GameProjectile.cs" />
     <Compile Include="Objects\Guns\BasicGun.cs" />
     <Compile Include="Objects\Guns\GameGunBase.cs" />

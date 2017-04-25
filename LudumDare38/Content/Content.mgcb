@@ -407,3 +407,87 @@
 /processorParam:TextureFormat=Color
 /build:imgs/enemies/TripleShooter.png
 
+#begin sounds/bgm/Rhinoceros.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:sounds/bgm/Rhinoceros.ogg
+
+#begin sounds/bgm/SpaceFighterLoop.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:sounds/bgm/SpaceFighterLoop.ogg
+
+#begin sounds/se/Spawn.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/se/Spawn.ogg
+
+#begin sounds/se/Alien_atk.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/se/Alien_atk.ogg
+
+#begin sounds/se/Alien_hit.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/se/Alien_hit.ogg
+
+#begin sounds/se/Buy.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/se/Buy.ogg
+
+#begin sounds/se/Cancel.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/se/Cancel.ogg
+
+#begin sounds/se/Confirm.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/se/Confirm.ogg
+
+#begin sounds/se/Cursor.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/se/Cursor.ogg
+
+#begin sounds/se/Explosion.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/se/Explosion.ogg
+
+#begin sounds/se/Gun.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/se/Gun.ogg
+
+#begin sounds/se/Laser.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/se/Laser.ogg
+
+#begin sounds/se/Planet_hit.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/se/Planet_hit.ogg
+
+#begin sounds/se/Shield.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/se/Shield.ogg
+

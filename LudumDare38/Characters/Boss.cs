@@ -9,6 +9,7 @@ using LudumDare38.Sprites;
 using Microsoft.Xna.Framework;
 using LudumDare38.Objects;
 using LudumDare38.Managers;
+using Microsoft.Xna.Framework.Audio;
 
 namespace LudumDare38.Characters
 {
@@ -18,18 +19,23 @@ namespace LudumDare38.Characters
         protected override float InitialImmunityTime => 50.0f;
         protected override HslColor EnemyColor => new HslColor(317, 0.55f, 0.39f);
 
-        private float _shotCooldown;
+        private float _spawnCooldown;
 
         private List<TripleShooter> _enemiesQueued;
         public List<TripleShooter> EnemiesQueued => _enemiesQueued;
         private bool _needCollectExplosionDamage;
 
+        private SoundEffect _explosionSe;
+        private SoundEffect _spawnSe;
+
         public Boss(Texture2D texture) : base(texture)
         {
             _hp = 20;
             _gold = 20;
-            _shotCooldown = 2000f;
+            _spawnCooldown = 2000f;
             _enemiesQueued = new List<TripleShooter>();
+            _spawnSe = SoundManager.LoadSe("Spawn");
+            _explosionSe = SoundManager.LoadSe("Explosion");
         }
 
         protected override void CreateSprite(Texture2D texture)
@@ -47,9 +53,9 @@ namespace LudumDare38.Characters
                 new Rectangle(510, 0, 170, 170)
             });
 
-            _sprite.CreateFrameList("shooting", 100, false);
-            _sprite.AddCollider("shooting", new Rectangle(0, 0, 170, 170));
-            _sprite.AddFrames("shooting", new List<Rectangle>()
+            _sprite.CreateFrameList("spawning", 100, false);
+            _sprite.AddCollider("spawning", new Rectangle(0, 0, 170, 170));
+            _sprite.AddFrames("spawning", new List<Rectangle>()
             {
                 new Rectangle(0, 170, 170, 170),
                 new Rectangle(170, 170, 170, 170),
@@ -75,6 +81,7 @@ namespace LudumDare38.Characters
 
         private void QueueEnemies()
         {
+            _spawnSe.PlaySafe();
             var rotationIncrease = (float)Math.PI / 10;
             var a = -1;
             for (var i = 0; i < 3; i++, a++)
@@ -103,7 +110,7 @@ namespace LudumDare38.Characters
         private void UpdateMovement(GameTime gameTime)
         {
             var distanceToTarget = Math.Sqrt(Math.Pow(_target.X - _position.X, 2) + Math.Pow(_target.Y - _position.Y, 2));
-            if (distanceToTarget > 230 || _shotCooldown > 0.0f)
+            if (distanceToTarget > 230 || _spawnCooldown > 0.0f)
             {
                 _position += _velocity * (distanceToTarget > 230 ? 5 : 0.2f);
                 _sprite.Rotation = (float)Math.Atan2(_velocity.Y, _velocity.X);
@@ -116,29 +123,29 @@ namespace LudumDare38.Characters
                 return;
             }
 
-            UpdateShots(gameTime);
+            UpdateSpawn(gameTime);
             _sprite.Position = _position;
         }
 
-        private void UpdateShots(GameTime gameTime)
+        private void UpdateSpawn(GameTime gameTime)
         {
-            if (_shotCooldown <= 0.0f)
+            if (_spawnCooldown <= 0.0f)
             {
-                _sprite.SetFrameList("shooting");
+                _sprite.SetFrameList("spawning");
             }
             else
             {
-                _shotCooldown -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                _spawnCooldown -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
             }
         }
 
         private void UpdateSprite()
         {
-            if (_sprite.CurrentFrameList == "shooting")
+            if (_sprite.CurrentFrameList == "spawning")
             {
-                if (_shotCooldown <= 0.0f && _sprite.CurrentFrame == 2)
+                if (_spawnCooldown <= 0.0f && _sprite.CurrentFrame == 2)
                 {
-                    _shotCooldown = 5000.0f;
+                    _spawnCooldown = 5000.0f;
                     QueueEnemies();
                 }
                 if (_sprite.Looped)
@@ -157,6 +164,7 @@ namespace LudumDare38.Characters
         {
             _needCollectExplosionDamage = true;
             GetDamaged(999);
+            _explosionSe.PlaySafe();
         }
     }
 }

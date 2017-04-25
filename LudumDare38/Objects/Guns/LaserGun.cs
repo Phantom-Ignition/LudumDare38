@@ -1,6 +1,7 @@
 ﻿using LudumDare38.Managers;
 using LudumDare38.Sprites;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Sprites;
 using MonoGame.Extended.ViewportAdapters;
@@ -19,9 +20,12 @@ namespace LudumDare38.Objects.Guns
         
         private bool _isShooting;
 
+        private SoundEffect _laserSe;
+
         public LaserGun(GunType gunType, OrbitField orbitField) : base(gunType, orbitField)
         {
             _cooldown = 1200.0f;
+            _laserSe = SoundManager.LoadSe("Laser");
             CreateLaser();
         }
 
@@ -99,6 +103,7 @@ namespace LudumDare38.Objects.Guns
                         _sprite.SetFrameList("loading");
                         break;
                     case "loading":
+                        _laserSe.PlaySafe();
                         _sprite.SetFrameList("shoting");
                         _isShooting = true;
                         _laser.Sprite.IsVisible = true;

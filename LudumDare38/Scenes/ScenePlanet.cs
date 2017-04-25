@@ -13,6 +13,7 @@ using LudumDare38.Helpers;
 using MonoGame.Extended.BitmapFonts;
 using LudumDare38.Helpers.TinyTween;
 using MonoGame.Extended.Sprites;
+using Microsoft.Xna.Framework.Audio;
 
 namespace LudumDare38.Scenes
 {
@@ -93,6 +94,12 @@ namespace LudumDare38.Scenes
 
         private UpgradeSelectionHelper _upgradeSelectionHelper;
 
+        //--------------------------------------------------
+        // SEs
+
+        private SoundEffect _enemyHitSe;
+        private SoundEffect _planetHitSe;
+
         //----------------------//------------------------//
 
         public override void LoadContent()
@@ -103,6 +110,7 @@ namespace LudumDare38.Scenes
             _upgradeSelectionHelper = new UpgradeSelectionHelper();
             _upgradeSelectionHelper.LoadContent();
 
+            LoadSounds();
             CreatePlanet();
             CreateHud();
             CreateGuns();
@@ -110,6 +118,14 @@ namespace LudumDare38.Scenes
             InitializeEnemies();
             InitializeSpawnManager();
             InitializeWaveClear();
+
+            SoundManager.StartBgm("Rhinoceros");
+        }
+
+        private void LoadSounds()
+        {
+            _enemyHitSe = SoundManager.LoadSe("Alien_hit");
+            _planetHitSe = SoundManager.LoadSe("Planet_hit");
         }
 
         public override void UnloadContent()
@@ -242,6 +258,7 @@ namespace LudumDare38.Scenes
                             Vector2 collisionPoint;
                             if (CollisionHelper.IsColliding(laserGun.Laser, enemy, out collisionPoint))
                             {
+                                _enemyHitSe.PlaySafe();
                                 enemy.GetShot(1, collisionPoint, laserGun.Laser.Rotation());
                             }
                         }
@@ -276,6 +293,7 @@ namespace LudumDare38.Scenes
                     var distance = Math.Sqrt(Math.Pow(_planet.X - pos.X, 2) + Math.Pow(_planet.Y - pos.Y, 2));
                     if (distance < GamePlanet.Radius + projectile.Sprite.GetColliderWidth() / 3)
                     {
+                        _planetHitSe.PlaySafe();
                         _planet.GetDamaged(projectile.Damage);
                         projectile.Destroy();
                     }
@@ -312,6 +330,7 @@ namespace LudumDare38.Scenes
                     {
                         if (enemySuicidable.NeedCollectExplosionDamage())
                         {
+                            _planetHitSe.PlaySafe();
                             _planet.GetDamaged(enemySuicidable.ContactDamage());
                             enemySuicidable.CollectExplosionDamage();
                         }
@@ -380,6 +399,7 @@ namespace LudumDare38.Scenes
                             if (projectile.Subject == ProjectileSubject.FromPlayer &&
                                 CollisionHelper.IsColliding(projectile, enemy, out collisionPoint))
                             {
+                                _enemyHitSe.PlaySafe();
                                 enemy.GetShot(projectile.Damage, collisionPoint, projectile.Rotation());
                                 projectile.Destroy();
                             }

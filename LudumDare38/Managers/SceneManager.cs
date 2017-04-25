@@ -116,7 +116,6 @@ namespace LudumDare38.Managers
         {
             _rand = new Random();
             _currentScene = new ScenePlanet();
-
         }
 
         public void RequestExit()
@@ -152,6 +151,10 @@ namespace LudumDare38.Managers
             _bloomFilter.BloomThreshold = 0.5f;
             _bloomFilter.BloomStrengthMultiplier = 0.5f;
             _bloomFilter.BloomStreakLength = 2;
+
+            SoundManager.Initialize();
+            SoundManager.SetSeVolume(0.9f);
+            SoundManager.SetBgmVolume(0.7f);
 
             _currentScene.LoadContent();
         }

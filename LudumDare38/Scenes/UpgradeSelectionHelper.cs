@@ -3,6 +3,7 @@ using LudumDare38.Helpers.TinyTween;
 using LudumDare38.Managers;
 using LudumDare38.Objects.Guns;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.BitmapFonts;
@@ -83,6 +84,11 @@ namespace LudumDare38.Scenes
         private int _orbitIndex;
         private int _angleIndex;
 
+        //--------------------------------------------------
+        // SEs
+
+        private SoundEffect _buySe;
+
         //----------------------//------------------------//
 
         public UpgradeSelectionHelper()
@@ -92,6 +98,7 @@ namespace LudumDare38.Scenes
             _cursorTween = new Vector2Tween();
             _cursorIndexOffset = new[] { -87, 0, 87 };
             _backgroundTween = new FloatTween();
+            _buySe = SoundManager.LoadSe("Buy");
         }
 
         public void Activate()
@@ -256,10 +263,12 @@ namespace LudumDare38.Scenes
             if (InputManager.Instace.KeyPressed(Keys.Left))
             {
                 _cursorIndex = _cursorIndex - 1 < 0 ? 2 : _cursorIndex - 1;
+                SoundManager.PlaySelectSe();
             }
             if (InputManager.Instace.KeyPressed(Keys.Right))
             {
                 _cursorIndex = _cursorIndex + 1 > 2 ? 0 : _cursorIndex + 1;
+                SoundManager.PlaySelectSe();
             }
             if (InputManager.Instace.KeyPressed(Keys.Z))
             {
@@ -270,6 +279,7 @@ namespace LudumDare38.Scenes
             }
             if (InputManager.Instace.KeyPressed(Keys.X))
             {
+                SoundManager.PlaySelectSe();
                 _exiting = true;
                 _complete = true;
                 Deactivate();
@@ -343,11 +353,13 @@ namespace LudumDare38.Scenes
                 PlanetManager.Instance.CreateGun(_placeholderGun);
                 _placeholderGun = null;
                 SetPhase(Phase.Buy);
+                _buySe.PlaySafe();
             }
 
             // Update Cancel
             if (InputManager.Instace.KeyPressed(Keys.X))
             {
+                SoundManager.PlayConfirmSe();
                 SetPhase(Phase.Buy);
                 _placeholderGun = null;
             }

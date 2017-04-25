@@ -30,7 +30,7 @@ namespace LudumDare38.Objects.Guns
                 new Rectangle(0, 0, 9, 2)
             });
 
-            _laserSprite.CreateFrameList("attack", 400);
+            _laserSprite.CreateFrameList("attack", 600);
             _laserSprite.AddCollider("attack", new Rectangle(0, 0, 9, 2));
             _laserSprite.AddFrames("attack", new List<Rectangle>()
             {

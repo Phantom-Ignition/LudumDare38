@@ -5,6 +5,8 @@ using LudumDare38.Sprites;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended.Particles;
 using LudumDare38.Objects;
+using Microsoft.Xna.Framework.Audio;
+using LudumDare38.Managers;
 
 namespace LudumDare38.Characters
 {
@@ -15,11 +17,14 @@ namespace LudumDare38.Characters
         protected override HslColor EnemyColor => new HslColor(317, 0.55f, 0.39f);
 
         private bool _needCollectExplosionDamage;
+        
+        private SoundEffect _explosionSe;
 
         public Kamikaze(Texture2D texture) : base(texture)
         {
             _hp = 3;
             _gold = 5;
+            _explosionSe = SoundManager.LoadSe("Explosion");
         }
 
         protected override void CreateSprite(Texture2D texture)
@@ -85,6 +90,7 @@ namespace LudumDare38.Characters
         {
             _needCollectExplosionDamage = true;
             GetDamaged(999);
+            _explosionSe.PlaySafe();
         }
     }
 }

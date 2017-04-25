@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
 using LudumDare38.Helpers;
 using MonoGame.Extended.ViewportAdapters;
+using Microsoft.Xna.Framework.Audio;
 
 namespace LudumDare38.Objects.Guns
 {
@@ -13,10 +14,13 @@ namespace LudumDare38.Objects.Guns
         private KillableObject _killableObject;
         public bool RequestingErase => _killableObject.RequestErase;
 
+        private SoundEffect _shieldSe;
+
         public Shield(GunType gunType, OrbitField orbitField) : base(gunType, orbitField)
         {
             Static = true;
             _killableObject = new KillableObject(3);
+            _shieldSe = SoundManager.LoadSe("Shield");
         }
 
         protected override void CreateSprite()
@@ -52,6 +56,7 @@ namespace LudumDare38.Objects.Guns
 
         public void GetDamaged(int damage)
         {
+            _shieldSe.PlaySafe();
             _killableObject.GetDamaged(damage);
             switch (_killableObject.HP)
             {

@@ -1,6 +1,7 @@
 ﻿using LudumDare38.Managers;
 using LudumDare38.Sprites;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using System;
 using System.Collections.Generic;
 
@@ -8,9 +9,12 @@ namespace LudumDare38.Objects.Guns
 {
     class BasicGun : GameGunBase
     {
+        private SoundEffect _shotSe;
+
         public BasicGun(GunType gunType, OrbitField orbitField) : base(gunType, orbitField)
         {
             _cooldown = 90.0f;
+            _shotSe = SoundManager.LoadSe("Gun");
         }
 
         protected override void CreateSprite()
@@ -52,6 +56,7 @@ namespace LudumDare38.Objects.Guns
             var rotation = _sprite.Rotation - (float)Math.PI / 2;
             var position = _sprite.Position - new Vector2(-(float)Math.Sin(rotation) * 10f, (float)Math.Cos(rotation) * 10f);
             projectile = new GameProjectile(ProjectileType.BasicProjectile, position, rotation, 5, 1, ProjectileSubject.FromPlayer);
+            _shotSe.PlaySafe();
             return true;
         }
     }
