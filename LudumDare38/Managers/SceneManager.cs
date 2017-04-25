@@ -16,8 +16,7 @@ namespace LudumDare38.Managers
     {
         //--------------------------------------------------
         // Public variables
-
-        //public Vector2 WindowSize = new Vector2(540, 540);
+        
         public Vector2 WindowSize = new Vector2(500, 500);
         public Vector2 VirtualSize = new Vector2(500, 500);
 
@@ -105,6 +104,9 @@ namespace LudumDare38.Managers
         private BitmapFont _gameFontSmall;
         public BitmapFont GameFontSmall => _gameFontSmall;
 
+        private BitmapFont _gameFontBig;
+        public BitmapFont GameFontBig => _gameFontBig;
+
         //--------------------------------------------------
         // Debug mode
 
@@ -115,7 +117,7 @@ namespace LudumDare38.Managers
         private SceneManager()
         {
             _rand = new Random();
-            _currentScene = new ScenePlanet();
+            _currentScene = new SceneTitle();
         }
 
         public void RequestExit()
@@ -140,6 +142,7 @@ namespace LudumDare38.Managers
 
             _gameFont = Content.Load<BitmapFont>("fonts/MediumFont");
             _gameFontSmall = Content.Load<BitmapFont>("fonts/SmallFont");
+            _gameFontBig = Content.Load<BitmapFont>("fonts/FontBig");
 
             _scanlinesEffect = EffectManager.Load("Scanlines");
             _scanlinesEffect.Parameters["Attenuation"].SetValue(0.04f);
@@ -153,8 +156,8 @@ namespace LudumDare38.Managers
             _bloomFilter.BloomStreakLength = 2;
 
             SoundManager.Initialize();
-            SoundManager.SetSeVolume(0.9f);
-            SoundManager.SetBgmVolume(0.7f);
+            SoundManager.SetSeVolume(0.7f);
+            SoundManager.SetBgmVolume(0.9f);
 
             _currentScene.LoadContent();
         }
@@ -172,9 +175,13 @@ namespace LudumDare38.Managers
                 DebugMode = !DebugMode;
 
             _currentScene.Update(gameTime);
-            if (PlanetManager.Instance.Paused)
+            if (_currentScene is SceneGameover)
             {
-                _bloomFilter.BloomStrengthMultiplier = 0.3f;
+                _bloomFilter.BloomStrengthMultiplier = 0.1f;
+            }
+            else if (PlanetManager.Instance.Paused || _currentScene is SceneTitle)
+            {
+                _bloomFilter.BloomStrengthMultiplier = 0.0f;
             }
             else
             {

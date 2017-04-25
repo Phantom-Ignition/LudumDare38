@@ -232,6 +232,12 @@ namespace LudumDare38.Scenes
             // Update the planet
             float floating;
             _planet.Update(gameTime, out floating);
+
+            if (_planet.HP <= 0)
+            {
+                PlanetManager.Instance.WavesSurvived = _enemiesSpawnManager.CurrentWave + 1;
+                SceneManager.Instance.ChangeScene("SceneGameover");
+            }
             
             // Update the upgrade selection
             _upgradeSelectionHelper.Update(gameTime, _rotation, floating);

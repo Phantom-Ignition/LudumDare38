@@ -68,8 +68,6 @@ namespace LudumDare38.Managers
             _waveSpawnQueue = new List<EnemyType>();
             _rand = new Random();
             _spawnInterval = 200.0f;
-
-            _currentSpawnInterval = 1500.0f; // TODO REMOVE THIS
         }
 
         public void Start()

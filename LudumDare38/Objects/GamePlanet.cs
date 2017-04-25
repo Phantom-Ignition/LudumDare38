@@ -26,7 +26,7 @@ namespace LudumDare38.Objects
         
         public GamePlanet(Texture2D texture, Vector2 initPosition)
         {
-            _hp = 500;
+            _hp = 20;
             _sprite = new Sprite(texture);
             _position = initPosition;
             _initPosition = initPosition;

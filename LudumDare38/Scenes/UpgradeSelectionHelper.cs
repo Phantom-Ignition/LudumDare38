@@ -395,6 +395,16 @@ namespace LudumDare38.Scenes
                         var posx = (SceneManager.Instance.VirtualSize.X - font.MeasureString(texts[i]).X) / 2;
                         spriteBatch.DrawString(font, texts[i], new Vector2(posx, 20 + 25 * i), Color.White * a);
                     }
+
+                    var bellowTexts = new string[]
+                    {
+                        "Gold: " + PlanetManager.Instance.Gold.ToString()
+                    };
+                    for (var i = 0; i < bellowTexts.Length; i++)
+                    {
+                        var posx = (SceneManager.Instance.VirtualSize.X - font.MeasureString(bellowTexts[i]).X) / 2;
+                        spriteBatch.DrawString(font, bellowTexts[i], new Vector2(posx, 470), Color.White * a);
+                    }
                 }
                 else
                 {

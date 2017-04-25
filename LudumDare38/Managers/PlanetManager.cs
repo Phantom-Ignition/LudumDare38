@@ -64,9 +64,19 @@ namespace LudumDare38.Managers
 
         public bool Paused { get; set; }
 
+        //--------------------------------------------------
+        // Waves survived
+
+        public int WavesSurvived { get; set; }
+
         //----------------------//------------------------//
 
         private PlanetManager()
+        {
+            Reset();
+        }
+
+        public void Reset()
         {
             _possibleAngles = new float[8];
             var angleStep = (float)Math.PI * 2 / _possibleAngles.Length;
@@ -82,6 +92,9 @@ namespace LudumDare38.Managers
             }
 
             _guns = new List<GameGunBase>();
+
+            WavesSurvived = 0;
+            Paused = false;
         }
 
         public GameGunBase CreateGun(GameGunBase gun)
