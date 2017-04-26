@@ -16,6 +16,8 @@ namespace LudumDare38.Scenes
     {
         private Sprite _backgroundSprite;
 
+        private float _intervalBeforeLeave;
+
         public override void LoadContent()
         {
             base.LoadContent();
@@ -26,12 +28,18 @@ namespace LudumDare38.Scenes
             _backgroundSprite.Position = center;
 
             SoundManager.StartBgm("SpaceFighterLoop");
+
+            _intervalBeforeLeave = 2000.0f;
         }
 
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-            if (InputManager.Instace.KeyPressed(Keys.Z))
+            if (_intervalBeforeLeave > 0.0f)
+            {
+                _intervalBeforeLeave -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+            }
+            else if (InputManager.Instace.KeyPressed(Keys.Z))
             {
                 PlanetManager.Instance.Reset();
                 SceneManager.Instance.ChangeScene("SceneTitle");

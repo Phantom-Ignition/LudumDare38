@@ -155,7 +155,28 @@ namespace LudumDare38.Scenes
             _guns = new List<GameGunBase>();
             _gunsToRemove = new List<GameGunBase>();
 
-            _guns.Add(PlanetManager.Instance.CreateGun(new BasicGun(GunType.Basic, PlanetManager.Instance.AvailableOrbits[0])));
+
+            //_guns.Add(PlanetManager.Instance.CreateGun(new BasicGun(GunType.Basic, PlanetManager.Instance.AvailableOrbits[0])));
+
+            _guns.Add(PlanetManager.Instance.CreateGun(new Shield(GunType.Shield, PlanetManager.Instance.AvailableOrbits[0])));
+            /*
+            _guns.Add(PlanetManager.Instance.CreateGun(new Shield(GunType.Shield, PlanetManager.Instance.AvailableOrbits[0])));
+            _guns.Add(PlanetManager.Instance.CreateGun(new Shield(GunType.Shield, PlanetManager.Instance.AvailableOrbits[0])));
+            _guns.Add(PlanetManager.Instance.CreateGun(new Shield(GunType.Shield, PlanetManager.Instance.AvailableOrbits[0])));
+            _guns.Add(PlanetManager.Instance.CreateGun(new Shield(GunType.Shield, PlanetManager.Instance.AvailableOrbits[0])));
+            _guns.Add(PlanetManager.Instance.CreateGun(new Shield(GunType.Shield, PlanetManager.Instance.AvailableOrbits[0])));
+            _guns.Add(PlanetManager.Instance.CreateGun(new Shield(GunType.Shield, PlanetManager.Instance.AvailableOrbits[0])));
+            _guns.Add(PlanetManager.Instance.CreateGun(new Shield(GunType.Shield, PlanetManager.Instance.AvailableOrbits[0])));
+
+            /*
+            _guns.Add(PlanetManager.Instance.CreateGun(new LaserGun(GunType.LaserGun, PlanetManager.Instance.AvailableOrbits[0])));
+            _guns.Add(PlanetManager.Instance.CreateGun(new LaserGun(GunType.LaserGun, PlanetManager.Instance.AvailableOrbits[0])));
+            _guns.Add(PlanetManager.Instance.CreateGun(new LaserGun(GunType.LaserGun, PlanetManager.Instance.AvailableOrbits[0])));
+            _guns.Add(PlanetManager.Instance.CreateGun(new LaserGun(GunType.LaserGun, PlanetManager.Instance.AvailableOrbits[0])));
+            _guns.Add(PlanetManager.Instance.CreateGun(new LaserGun(GunType.LaserGun, PlanetManager.Instance.AvailableOrbits[0])));
+            _guns.Add(PlanetManager.Instance.CreateGun(new LaserGun(GunType.LaserGun, PlanetManager.Instance.AvailableOrbits[0])));
+            _guns.Add(PlanetManager.Instance.CreateGun(new LaserGun(GunType.LaserGun, PlanetManager.Instance.AvailableOrbits[0])));
+            _guns.Add(PlanetManager.Instance.CreateGun(new LaserGun(GunType.LaserGun, PlanetManager.Instance.AvailableOrbits[0])));
             /*
             _guns.Add(PlanetManager.Instance.CreateGun(new BasicGun(GunType.Basic, PlanetManager.Instance.AvailableOrbits[0])));
             _guns.Add(PlanetManager.Instance.CreateGun(new BasicGun(GunType.Basic, PlanetManager.Instance.AvailableOrbits[0])));
@@ -275,6 +296,7 @@ namespace LudumDare38.Scenes
                     var shield = (Shield)gun;
                     if (shield.RequestingErase)
                     {
+                        PlanetManager.Instance.RestoreOrbitField(shield.OrbitField);
                         _gunsToRemove.Add(gun);
                     }
                 }
@@ -336,8 +358,11 @@ namespace LudumDare38.Scenes
                     {
                         if (enemySuicidable.NeedCollectExplosionDamage())
                         {
-                            _planetHitSe.PlaySafe();
-                            _planet.GetDamaged(enemySuicidable.ContactDamage());
+                            if (!enemySuicidable.ExplodedByShield())
+                            {
+                                _planetHitSe.PlaySafe();
+                                _planet.GetDamaged(enemySuicidable.ContactDamage());
+                            }
                             enemySuicidable.CollectExplosionDamage();
                         }
                     }
@@ -391,7 +416,7 @@ namespace LudumDare38.Scenes
                                 if (cShield.Sprite.Alpha > 0.1f && CollisionHelper.IsColliding(cShield, enemy, out collisionPoint))
                                 {
                                     cShield.GetDamaged(enemySuicidable.ContactDamage());
-                                    enemySuicidable.Explode();
+                                    enemySuicidable.Explode(true);
                                 }
                             }
                         }

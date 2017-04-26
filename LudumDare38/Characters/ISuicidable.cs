@@ -9,8 +9,9 @@ namespace LudumDare38.Characters
     interface ISuicidable
     {
         int ContactDamage();
-        void Explode();
+        void Explode(bool byShield);
         bool NeedCollectExplosionDamage();
+        bool ExplodedByShield();
         void CollectExplosionDamage();
     }
 }

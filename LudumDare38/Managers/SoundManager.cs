@@ -28,6 +28,8 @@ namespace LudumDare38.Managers
         private static SoundEffect _confirmSe;
         private static SoundEffect _selectSe;
 
+        private static Dictionary<string, SoundEffect> _seQueue;
+
         //--------------------------------------------------
         // BGMs
 
@@ -42,7 +44,7 @@ namespace LudumDare38.Managers
         //--------------------------------------------------
         // For debug purposes
 
-        private static bool _soundOn = true;
+        private static bool _soundOn = false;
 
         //----------------------//------------------------//
 
@@ -57,6 +59,8 @@ namespace LudumDare38.Managers
                 { "SpaceFighterLoop", LoadBgm("SpaceFighterLoop") }
             };
             MediaPlayer.IsRepeating = true;
+
+            _seQueue = new Dictionary<string, SoundEffect>();
 
             _bgmVolume = 1.0f;
             _seVolume = 1.0f;
@@ -111,11 +115,9 @@ namespace LudumDare38.Managers
 
         public static void PlaySafe(this SoundEffect se)
         {
-            if (_soundOn && se != null)
+            if (_soundOn && se != null && !_seQueue.ContainsKey(se.Name))
             {
-                var seIntance = se.CreateInstance();
-                seIntance.Volume = _seVolume;
-                seIntance.Play();
+                _seQueue.Add(se.Name, se);
             }
         }
 
@@ -142,6 +144,20 @@ namespace LudumDare38.Managers
         public static void PlaySelectSe()
         {
             _selectSe.PlaySafe();
+        }
+
+        public static void Update()
+        {
+            var seDelete = new List<SoundEffect>();
+            foreach (var se in _seQueue)
+            {
+                var instance = se.Value.CreateInstance();
+                instance.Volume = _seVolume;
+                instance.Play();
+                seDelete.Add(se.Value);
+            }
+            seDelete.ForEach(se => _seQueue.Remove(se.Name));
+            seDelete.Clear();
         }
 
         public static void Dispose()

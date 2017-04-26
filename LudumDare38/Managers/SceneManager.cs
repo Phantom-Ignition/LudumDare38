@@ -67,13 +67,6 @@ namespace LudumDare38.Managers
         private bool _beginTransitionFade = false;
 
         //--------------------------------------------------
-        // Map transitions
-
-        private int? _mapToLoad;
-        private bool _mapTransition = false;
-        private Action<int> _mapLoadCallback;
-
-        //--------------------------------------------------
         // Camera Shake
 
         private bool _shakeEnabled;
@@ -188,6 +181,8 @@ namespace LudumDare38.Managers
                 _bloomFilter.BloomStrengthMultiplier = 0.5f;
             }
             UpdateCameraShake(gameTime);
+
+            SoundManager.Update();
         }
 
         private void UpdateCameraShake(GameTime gameTime)
@@ -259,15 +254,6 @@ namespace LudumDare38.Managers
             _shakeDuration = duration;
         }
 
-        public void MapTransition(int mapId, Action<int> loadCallback = null)
-        {
-            if (_isTransitioning) return;
-            _mapTransition = true;
-            _mapToLoad = mapId;
-            _mapLoadCallback = loadCallback;
-            InitializeTransition();
-        }
-
         private void InitializeTransition()
         {
             _transitionImage.Alpha = 0;
@@ -288,20 +274,7 @@ namespace LudumDare38.Managers
             }
             else
             {
-                if (_mapTransition && _mapToLoad != null)
-                {
-                    var mapId = _mapToLoad ?? MapManager.FirstMap;
-                    MapManager.Instance.LoadMap(Content, mapId);
-                    if (_mapLoadCallback != null)
-                    {
-                        _mapLoadCallback(mapId);
-                        _mapLoadCallback = null;
-                    }
-                    _mapToLoad = null;
-                    _mapTransition = false;
-                }
-
-                if (!_mapTransition && _newScene != null)
+                if (_newScene != null)
                 {
                     _currentScene.UnloadContent();
                     _currentScene = _newScene;

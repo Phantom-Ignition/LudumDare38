@@ -90,7 +90,6 @@ namespace LudumDare38.Objects
             _subject = subject;
             _rand = new Random();
             CreateSprite(type);
-            CreateSpriteTextureData();
         }
 
         private void CreateSprite(ProjectileType type)
@@ -122,13 +121,8 @@ namespace LudumDare38.Objects
                     });
                     break;
             }
-        }
 
-        private void CreateSpriteTextureData()
-        {
-            var texture = _sprite.TextureRegion.Texture;
-            _spriteTextureData = new Color[texture.Width * texture.Height];
-            texture.GetData(_spriteTextureData);
+            _sprite.GenerateTextureData();
         }
 
         public void Update(GameTime gameTime)
@@ -193,14 +187,7 @@ namespace LudumDare38.Objects
 
         public Color[] TextureData()
         {
-            var frameRect = _sprite.GetCurrentFrameRectangle();
-            var textureData = new Color[frameRect.Width * frameRect.Height];
-            _sprite.TextureRegion.Texture.GetData(0,
-                new Rectangle(frameRect.X, frameRect.Y, frameRect.Width, frameRect.Height),
-                textureData,
-                0,
-                textureData.Length);
-            return textureData;
+            return _sprite.GetCurrentFrameTextureData();
         }
 
         #endregion

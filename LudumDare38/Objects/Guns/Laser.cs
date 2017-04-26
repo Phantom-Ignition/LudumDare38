@@ -17,6 +17,9 @@ namespace LudumDare38.Objects.Guns
         private Vector2 _position;
         private float _rotation;
 
+        private Texture2D _texture;
+        private Color[] _textureData;
+
         public Laser(Texture2D texture)
         {
             _laserSprite = new CharacterSprite(texture);
@@ -47,6 +50,20 @@ namespace LudumDare38.Objects.Guns
             });
 
             _laserSprite.IsVisible = false;
+
+            CreateTexture();
+        }
+
+        public void CreateTexture()
+        {
+            var rect = Rect();
+            var colorData = Enumerable.Range(0, rect.Width * rect.Height).Select(i => Color.Red).ToArray();
+            var texture = new Texture2D(SceneManager.Instance.GraphicsDevice, rect.Width, rect.Height);
+            texture.SetData(colorData);
+            _texture = texture;
+            
+            _textureData = new Color[_texture.Width * _texture.Height];
+            texture.GetData(_textureData);
         }
 
         public void Update(GameTime gameTime, Vector2 position, float rotation)
@@ -82,19 +99,12 @@ namespace LudumDare38.Objects.Guns
 
         public Texture2D Texture()
         {
-            var rect = Rect();
-            var colorData = Enumerable.Range(0, rect.Width * rect.Height).Select(i => Color.Red).ToArray();
-            var texture = new Texture2D(SceneManager.Instance.GraphicsDevice, rect.Width, rect.Height);
-            texture.SetData(colorData);
-            return texture;
+            return _texture;
         }
 
         public Color[] TextureData()
         {
-            var texture = Texture();
-            var textureData = new Color[texture.Width * texture.Height];
-            texture.GetData(textureData);
-            return textureData;
+            return _textureData;
         }
     }
 }

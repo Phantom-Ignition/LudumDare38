@@ -66,6 +66,11 @@ namespace LudumDare38.Objects.Guns
             _orbitField.Angle = angle;
         }
 
+        public void SetOrbitFieldAvailable(bool available)
+        {
+            _orbitField.Available = available;
+        }
+
         public virtual void Update(GameTime gameTime, float rotation, float floating)
         {
             var orbitLevel = _orbitField.OrbitLevel;

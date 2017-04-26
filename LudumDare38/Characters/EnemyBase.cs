@@ -256,12 +256,7 @@ namespace LudumDare38.Characters
         public Color[] TextureData()
         {
             var frameRect = _sprite.GetCurrentFrameRectangle();
-            var textureData = new Color[frameRect.Width * frameRect.Height];
-            _sprite.TextureRegion.Texture.GetData(0,
-                new Rectangle(frameRect.X, frameRect.Y, frameRect.Width, frameRect.Height),
-                textureData,
-                0,
-                textureData.Length);
+            var textureData = _sprite.GetCurrentFrameTextureData();
             if (_sprite.Effect == SpriteEffects.FlipVertically)
             {
                 // Thanks to Ellye!

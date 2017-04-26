@@ -54,6 +54,8 @@ namespace LudumDare38.Characters
                 new Rectangle(240, 80, 120, 80),
                 new Rectangle(360, 80, 120, 80)
             });
+
+            _sprite.GenerateTextureData();
         }
 
         private void QueueProjectile()

@@ -20,6 +20,8 @@ namespace LudumDare38.Characters
         
         private SoundEffect _explosionSe;
 
+        private bool _explodedByShield;
+
         public Kamikaze(Texture2D texture) : base(texture)
         {
             _hp = 3;
@@ -41,6 +43,8 @@ namespace LudumDare38.Characters
                 new Rectangle(200, 0, 100, 40),
                 new Rectangle(300, 0, 100, 40)
             });
+
+            _sprite.GenerateTextureData();
         }
 
         public int ContactDamage()
@@ -74,7 +78,7 @@ namespace LudumDare38.Characters
             var distance = Math.Sqrt(Math.Pow(_target.X - _position.X, 2) + Math.Pow(_target.Y - _position.Y, 2));
             if (distance < GamePlanet.Radius + _sprite.GetColliderWidth() / 2)
             {
-                Explode();
+                Explode(false);
                 return;
             }
 
@@ -86,11 +90,17 @@ namespace LudumDare38.Characters
             _sprite.Position = _position;
         }
 
-        public void Explode()
+        public void Explode(bool byShield)
         {
+            _explodedByShield = byShield;
             _needCollectExplosionDamage = true;
             GetDamaged(999);
             _explosionSe.PlaySafe();
+        }
+
+        public bool ExplodedByShield()
+        {
+            return _explodedByShield;
         }
     }
 }

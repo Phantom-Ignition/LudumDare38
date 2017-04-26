@@ -160,6 +160,26 @@ namespace LudumDare38.Sprites
                 _framesList[name].FramesToAttack.Add(frames[i]);
         }
 
+        public void GenerateTextureData()
+        {
+            foreach (var pair in _framesList)
+            {
+                var frameList = pair.Value;
+                for (var i = 0; i < frameList.Frames.Count; i++)
+                {
+                    var frame = frameList.Frames[i];
+                    var frameRect = frame.SpriteSheetInfo;
+                    var textureData = new Color[frameRect.Width * frameRect.Height];
+                    TextureRegion.Texture.GetData(0,
+                        new Rectangle(frameRect.X, frameRect.Y, frameRect.Width, frameRect.Height),
+                        textureData,
+                        0,
+                        textureData.Length);
+                    frameList.FramesTextureData.Add(textureData);
+                }
+            }
+        }
+
         public void SetFrameList(string name)
         {
             if (_currentFrameList != name)
@@ -264,6 +284,11 @@ namespace LudumDare38.Sprites
         public int GetColliderHeight()
         {
             return _framesList[_currentFrameList].Collider.Height;
+        }
+
+        public Color[] GetCurrentFrameTextureData()
+        {
+            return _framesList[_currentFrameList].FramesTextureData[_currentFrame];
         }
 
         public bool LoopFinished()

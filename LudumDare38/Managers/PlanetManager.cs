@@ -10,7 +10,7 @@ namespace LudumDare38.Managers
     //--------------------------------------------------
     // OrbitField
 
-    public struct OrbitField
+    public class OrbitField
     {
         public int OrbitLevel;
         public float Angle;
@@ -50,7 +50,7 @@ namespace LudumDare38.Managers
         public OrbitField[] Orbits => _orbits;
         public OrbitField[] AvailableOrbits => _orbits.Where(of => of.Available).ToArray();
 
-        private float[] _possibleAngles;        
+        private float[] _possibleAngles;
         public int NumPossibleAngles => _possibleAngles.Length;
 
         //--------------------------------------------------
@@ -103,6 +103,12 @@ namespace LudumDare38.Managers
             var index = Array.IndexOf(_orbits, gun.OrbitField);
             _orbits[index].Available = false;
             return gun;
+        }
+
+        public void RestoreOrbitField(OrbitField orbitField)
+        {
+            var index = Array.IndexOf(_orbits, orbitField);
+            _orbits[index].Available = true;
         }
 
         public int AngleIndex(float angle)

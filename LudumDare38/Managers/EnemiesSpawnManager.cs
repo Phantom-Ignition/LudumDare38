@@ -34,10 +34,10 @@ namespace LudumDare38.Managers
         // Spawn Rules
 
         private List<EnemyType> _waveSpawnQueue;
-        private int _kamikazeCount;
-        public int KamikazeCount => _kamikazeCount;
-        private int _shooterCount;
-        public int ShooterCount => _shooterCount;
+        private float _kamikazeCount;
+        public float KamikazeCount => _kamikazeCount;
+        private float _shooterCount;
+        public float ShooterCount => _shooterCount;
         private int _bossCount;
         public int BossCount => _bossCount;
 
@@ -148,9 +148,9 @@ namespace LudumDare38.Managers
             }
             else
             {
-                for (var i = 0; i < _kamikazeCount; i++)
+                for (var i = 0; i < (int)_kamikazeCount; i++)
                     _waveSpawnQueue.Add(EnemyType.Kamikaze);
-                for (var i = 0; i < _shooterCount; i++)
+                for (var i = 0; i < (int)_shooterCount; i++)
                     _waveSpawnQueue.Add(EnemyType.Shooter);
             }
             _waveSpawnQueue.Shuffle(_rand);
@@ -207,8 +207,8 @@ namespace LudumDare38.Managers
                 else
                 {
                     _bossCount = 0;
-                    _kamikazeCount = (int)(_kamikazeCount * 1.4);
-                    _shooterCount = (int)(_shooterCount * 1.4);
+                    _kamikazeCount *= 1.4f;
+                    _shooterCount *=  1.4f;
                 }
             }
         }

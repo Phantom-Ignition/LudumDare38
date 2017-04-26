@@ -119,8 +119,13 @@ namespace LudumDare38.Objects.Guns
 
             if (_isShooting)
             {
+                var scale = _laser.Sprite.Scale;
                 var y = Math.Min(_laser.Sprite.Scale.Y * 2f, SceneManager.Instance.VirtualSize.X / 2);
                 _laser.Sprite.Scale = new Vector2(1, y);
+                if (_laser.Sprite.Scale != scale)
+                {
+                    _laser.CreateTexture();
+                }
                 if (_laser.Sprite.Looped)
                 {
                     if (_laser.Sprite.CurrentFrameList == "attack")

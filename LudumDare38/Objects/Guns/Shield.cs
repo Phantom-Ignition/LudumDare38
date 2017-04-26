@@ -19,7 +19,7 @@ namespace LudumDare38.Objects.Guns
         public Shield(GunType gunType, OrbitField orbitField) : base(gunType, orbitField)
         {
             Static = true;
-            _killableObject = new KillableObject(3);
+            _killableObject = new KillableObject(4);
             _shieldSe = SoundManager.LoadSe("Shield");
         }
 
@@ -52,6 +52,8 @@ namespace LudumDare38.Objects.Guns
                 new Rectangle(0, 30, 39, 15),
                 new Rectangle(39, 30, 39, 15)
             });
+
+            _sprite.GenerateTextureData();
         }
 
         public void GetDamaged(int damage)

@@ -28,6 +28,8 @@ namespace LudumDare38.Characters
         private SoundEffect _explosionSe;
         private SoundEffect _spawnSe;
 
+        private bool _explodedByShield;
+
         public Boss(Texture2D texture) : base(texture)
         {
             _hp = 20;
@@ -62,6 +64,8 @@ namespace LudumDare38.Characters
                 new Rectangle(340, 170, 170, 170),
                 new Rectangle(510, 170, 170, 170)
             });
+
+            _sprite.GenerateTextureData();
         }
 
         public int ContactDamage()
@@ -119,7 +123,7 @@ namespace LudumDare38.Characters
             var distance = Math.Sqrt(Math.Pow(_target.X - _position.X, 2) + Math.Pow(_target.Y - _position.Y, 2));
             if (distance < GamePlanet.Radius + _sprite.GetColliderWidth() / 3)
             {
-                Explode();
+                Explode(false);
                 return;
             }
 
@@ -160,11 +164,17 @@ namespace LudumDare38.Characters
             }
         }
 
-        public void Explode()
+        public void Explode(bool byShield)
         {
+            _explodedByShield = byShield;
             _needCollectExplosionDamage = true;
             GetDamaged(999);
             _explosionSe.PlaySafe();
+        }
+
+        public bool ExplodedByShield()
+        {
+            return _explodedByShield;
         }
     }
 }
