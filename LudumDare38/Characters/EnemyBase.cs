@@ -28,7 +28,7 @@ namespace LudumDare38.Characters
         Boss
     }
 
-    abstract class EnemyBase : KillableObject, ICollidableObject
+    abstract class EnemyBase : KillableObject, ICollidableObject, IDisposable
     {
         //--------------------------------------------------
         // Enemy type
@@ -275,6 +275,15 @@ namespace LudumDare38.Characters
                 textureData = flipData;
             }
             return textureData;
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        public void Dispose()
+        {
+            _particlesTexture.Dispose();
         }
 
         #endregion

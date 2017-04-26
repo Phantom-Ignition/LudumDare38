@@ -3,8 +3,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Sprites;
-using LudumDare38.Managers;
-using System.Diagnostics;
 
 namespace LudumDare38.Sprites
 {
@@ -25,13 +23,15 @@ namespace LudumDare38.Sprites
         // Frames stuff
 
         private int _currentFrame;
+        public int CurrentFrame => _currentFrame;
+
         private string _currentFrameList;
-        private Dictionary<string, FramesList> _framesList;
-        public int CurrentFrame { get { return _currentFrame; } }
-        public string CurrentFrameList { get { return _currentFrameList; } }
+        public string CurrentFrameList => _currentFrameList;
 
         private bool _looped;
-        public bool Looped { get { return _looped; } }
+        public bool Looped => _looped;
+
+        private Dictionary<string, FramesList> _framesList;
 
         //--------------------------------------------------
         // Animation delay
@@ -41,36 +41,15 @@ namespace LudumDare38.Sprites
         //--------------------------------------------------
         // Battle System visual stuff
 
-        private int _immunityTick;
-        private float _immunityTimeElapsed;
-        private float _immunityMaxTime;
-        private bool _immunityAnimation;
-        private float _immunityAlphaStore;
-        public bool ImmunityAnimationActive { get { return _immunityAnimation; } }
-
         private bool _dyingAnimation;
         private bool _skipDyingAnimationFrames;
         private bool _dyingAnimationEnded;
-        public bool DyingAnimationEnded { get { return _dyingAnimationEnded; } }
+        public bool DyingAnimationEnded => _dyingAnimationEnded;
 
         //--------------------------------------------------
         // Collider
 
-        private Texture2D _colliderRedTexture;
-        private Texture2D _colliderYellowTexture;
-
         public SpriteCollider Collider => GetCurrentFramesList().Collider;
-
-        //--------------------------------------------------
-        // Bouding Box
-
-        public Rectangle BoundingBox
-        {
-            get
-            {
-                return new Rectangle((int)Position.X, (int)Position.Y, GetCurrentFrameRectangle().Width, GetCurrentFrameRectangle().Height);
-            }
-        }
 
         //----------------------//------------------------//
 
@@ -82,22 +61,10 @@ namespace LudumDare38.Sprites
             _framesList = new Dictionary<string, FramesList>();
             _looped = false;
 
-            _immunityMaxTime = 0.5f;
-            _immunityTick = 0;
-            _immunityTimeElapsed = 0;
-            _immunityAnimation = false;
-            _immunityAlphaStore = Alpha;
-
             _dyingAnimation = false;
             _dyingAnimationEnded = false;
 
             Origin = Vector2.Zero;
-
-            _colliderRedTexture = new Texture2D(SceneManager.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
-            _colliderRedTexture.SetData<Color>(new Color[] { Color.Red });
-
-            _colliderYellowTexture = new Texture2D(SceneManager.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
-            _colliderYellowTexture.SetData<Color>(new Color[] { Color.Yellow });
         }
 
         public void CreateFrameList(string name, int delay)
@@ -237,13 +204,6 @@ namespace LudumDare38.Sprites
                 Effect = SpriteEffects.None;
         }
 
-        public void RequestImmunityAnimation()
-        {
-            _immunityAnimation = true;
-            _immunityTick = 0;
-            _immunityTimeElapsed = 0;
-        }
-
         public void RequestDyingAnimation()
         {
             _dyingAnimation = true;
@@ -291,16 +251,8 @@ namespace LudumDare38.Sprites
             return _framesList[_currentFrameList].FramesTextureData[_currentFrame];
         }
 
-        public bool LoopFinished()
-        {
-            return _currentFrame == GetCurrentFramesList().Frames.Count - 1;
-        }
-
         public void Update(GameTime gameTime)
         {
-            if (_immunityAnimation)
-                UpdateImmunityAnimation(gameTime);
-
             if (_dyingAnimation)
                 UpdateDying(gameTime);
 
@@ -325,48 +277,17 @@ namespace LudumDare38.Sprites
             }
         }
 
-        private void UpdateImmunityAnimation(GameTime gameTime)
-        {
-            Alpha = _immunityTick == 0 ? 1f : 0.2f;
-            _immunityTimeElapsed += (float)gameTime.ElapsedGameTime.TotalSeconds;
-            if (_immunityTimeElapsed > _immunityMaxTime)
-            {
-                _immunityAnimation = false;
-                _immunityTick = 0;
-                _immunityTimeElapsed = 0f;
-                Alpha = _immunityAlphaStore;
-            }
-            else
-            {
-                _immunityTick = _immunityTick == 0 ? 1 : 0;
-            }
-        }
-
         public void UpdateDying(GameTime gameTime)
         {
             if ((_framesList.ContainsKey("dying") && _currentFrameList == "dying" && _looped) || _skipDyingAnimationFrames)
             {
                 Alpha -= 0.05f;
-                if (Alpha <= 0f)
+                if (Alpha <= 0.0f)
                 {
                     _dyingAnimationEnded = true;
                     _dyingAnimation = false;
                 }
             }
-        }
-
-        private Texture2D GetColliderTexture(SpriteCollider collider)
-        {
-            return collider.Type == SpriteCollider.ColliderType.Block ? _colliderRedTexture : _colliderYellowTexture;
-        }
-
-        public void DrawColliders(SpriteBatch spriteBatch)
-        {
-            var blockColider = GetCurrentFramesList().Collider;
-            spriteBatch.Draw(GetColliderTexture(blockColider), destinationRectangle: blockColider.BoundingBox, color: Color.White * 0.5f, rotation: Rotation);
-
-            foreach (var collider in GetCurrentFramesList().Frames[CurrentFrame].AttackColliders)
-                spriteBatch.Draw(GetColliderTexture(collider), collider.BoundingBox, Color.White * 0.5f);
         }
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position)

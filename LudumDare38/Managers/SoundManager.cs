@@ -29,6 +29,7 @@ namespace LudumDare38.Managers
         private static SoundEffect _selectSe;
 
         private static Dictionary<string, SoundEffect> _seQueue;
+        private static List<SoundEffect> _seToRemove;
 
         //--------------------------------------------------
         // BGMs
@@ -53,14 +54,17 @@ namespace LudumDare38.Managers
             _cancelSe = LoadSe("Cancel");
             _confirmSe = LoadSe("Confirm");
             _selectSe = LoadSe("Cursor");
+
             _songs = new Dictionary<string, Song>
             {
                 { "Rhinoceros", LoadBgm("Rhinoceros") },
                 { "SpaceFighterLoop", LoadBgm("SpaceFighterLoop") }
             };
+
             MediaPlayer.IsRepeating = true;
 
             _seQueue = new Dictionary<string, SoundEffect>();
+            _seToRemove = new List<SoundEffect>();
 
             _bgmVolume = 1.0f;
             _seVolume = 1.0f;
@@ -105,7 +109,10 @@ namespace LudumDare38.Managers
             {
                 if (bgmName != _bgmName)
                 {
-                    MediaPlayer.Stop();
+                    if (MediaPlayer.State == MediaState.Playing)
+                    {
+                        MediaPlayer.Stop();
+                    }
                     MediaPlayer.Play(_songs[bgmName]);
                     _bgmName = bgmName;
                 }
@@ -148,16 +155,15 @@ namespace LudumDare38.Managers
 
         public static void Update()
         {
-            var seDelete = new List<SoundEffect>();
             foreach (var se in _seQueue)
             {
                 var instance = se.Value.CreateInstance();
                 instance.Volume = _seVolume;
                 instance.Play();
-                seDelete.Add(se.Value);
+                _seToRemove.Add(se.Value);
             }
-            seDelete.ForEach(se => _seQueue.Remove(se.Name));
-            seDelete.Clear();
+            _seToRemove.ForEach(se => _seQueue.Remove(se.Name));
+            _seToRemove.Clear();
         }
 
         public static void Dispose()

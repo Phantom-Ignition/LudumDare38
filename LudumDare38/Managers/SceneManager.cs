@@ -158,6 +158,11 @@ namespace LudumDare38.Managers
         public void UnloadContent()
         {
             _currentScene.UnloadContent();
+            _transitionImage.TextureRegion.Texture.Dispose();
+            _sceneRenderTarget.Dispose();
+            _scanlinesRenderTarget.Dispose();
+            _bloomFilter.Dispose();
+            _scanlinesEffect.Dispose();
         }
 
         public void Update(GameTime gameTime)

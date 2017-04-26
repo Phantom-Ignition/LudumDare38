@@ -37,8 +37,7 @@ namespace LudumDare38.Scenes
 
         //--------------------------------------------------
         // Projectiles
-
-        private Texture2D _projectilesColliderTexture;
+        
         private List<GameProjectile> _projectilesToRemove;
         private List<GameProjectile> _projectiles;
 
@@ -131,7 +130,12 @@ namespace LudumDare38.Scenes
         public override void UnloadContent()
         {
             base.UnloadContent();
+            _guns.ForEach(gun => gun.Dispose());
+            _enemies.ForEach(enemy => enemy.Dispose());
+            _guns.Clear();
+            _enemies.Clear();
             _upgradeSelectionHelper.Dispose();
+            _waveClearBackgroundSprite.TextureRegion.Texture.Dispose();
         }
 
         private void CreatePlanet()
@@ -156,9 +160,9 @@ namespace LudumDare38.Scenes
             _gunsToRemove = new List<GameGunBase>();
 
 
-            //_guns.Add(PlanetManager.Instance.CreateGun(new BasicGun(GunType.Basic, PlanetManager.Instance.AvailableOrbits[0])));
+            _guns.Add(PlanetManager.Instance.CreateGun(new BasicGun(GunType.Basic, PlanetManager.Instance.AvailableOrbits[0])));
 
-            _guns.Add(PlanetManager.Instance.CreateGun(new Shield(GunType.Shield, PlanetManager.Instance.AvailableOrbits[0])));
+            //_guns.Add(PlanetManager.Instance.CreateGun(new Shield(GunType.Shield, PlanetManager.Instance.AvailableOrbits[0])));
             /*
             _guns.Add(PlanetManager.Instance.CreateGun(new Shield(GunType.Shield, PlanetManager.Instance.AvailableOrbits[0])));
             _guns.Add(PlanetManager.Instance.CreateGun(new Shield(GunType.Shield, PlanetManager.Instance.AvailableOrbits[0])));
@@ -198,8 +202,6 @@ namespace LudumDare38.Scenes
         {
             _projectilesToRemove = new List<GameProjectile>();
             _projectiles = new List<GameProjectile>();
-            _projectilesColliderTexture = new Texture2D(SceneManager.Instance.GraphicsDevice, 1, 1);
-            _projectilesColliderTexture.SetData(new Color[] { Color.Orange });
         }
 
         private void InitializeEnemies()
@@ -297,6 +299,7 @@ namespace LudumDare38.Scenes
                     if (shield.RequestingErase)
                     {
                         PlanetManager.Instance.RestoreOrbitField(shield.OrbitField);
+                        gun.Dispose();
                         _gunsToRemove.Add(gun);
                     }
                 }
@@ -369,6 +372,7 @@ namespace LudumDare38.Scenes
                 }
                 if (enemy.RequestErase)
                 {
+                    enemy.Dispose();
                     _enemiesToRemove.Add(enemy);
                 }
                 else if (!enemy.Dying && enemy.Alive)

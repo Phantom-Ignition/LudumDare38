@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace LudumDare38.Objects.Guns
 {
-    class Laser : ICollidableObject
+    class Laser : ICollidableObject, IDisposable
     {
         private CharacterSprite _laserSprite;
         public CharacterSprite Sprite => _laserSprite;
@@ -105,6 +105,11 @@ namespace LudumDare38.Objects.Guns
         public Color[] TextureData()
         {
             return _textureData;
+        }
+
+        public void Dispose()
+        {
+            _texture.Dispose();
         }
     }
 }

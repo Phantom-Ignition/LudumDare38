@@ -14,7 +14,7 @@ namespace LudumDare38.Objects.Guns
         LaserGun
     }
 
-    abstract class GameGunBase
+    abstract class GameGunBase : IDisposable
     {
         protected GunType _gunType;
         public GunType GunType => _gunType;
@@ -104,6 +104,10 @@ namespace LudumDare38.Objects.Guns
             PreDraw(spriteBatch, transformMatrix);
             _sprite.Draw(spriteBatch, _sprite.Position);
             spriteBatch.End();
+        }
+
+        public virtual void Dispose()
+        {
         }
     }
 }

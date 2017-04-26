@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace LudumDare38.Objects.Guns
 {
-    class LaserGun : GameGunBase
+    class LaserGun : GameGunBase, IDisposable
     {
         private Laser _laser;
         public Laser Laser => _laser;
@@ -145,9 +145,7 @@ namespace LudumDare38.Objects.Guns
         public override bool Shot(out GameProjectile projectile)
         {
             base.Shot(out projectile);
-
             _sprite.SetFrameList("preparation");
-
             return false;
         }
 
@@ -157,6 +155,12 @@ namespace LudumDare38.Objects.Guns
             _laser.Sprite.Draw(spriteBatch, _laser.Sprite.Position);
             spriteBatch.End();
             base.Draw(spriteBatch, transformMatrix);
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _laser.Dispose();
         }
     }
 }
