@@ -13,8 +13,8 @@ namespace LudumDare38.Managers
         //--------------------------------------------------
         // Content Manager
 
-        private static Dictionary<string, SoundEffect> _seCache = new Dictionary<string, SoundEffect>();
-        private static ContentManager _contentManager = new ContentManager(SceneManager.Instance.Content.ServiceProvider, "Content");
+        private static Dictionary<string, SoundEffect> _seCache;
+        private static ContentManager _contentManager;
 
         //--------------------------------------------------
         // BGM Name
@@ -45,12 +45,15 @@ namespace LudumDare38.Managers
         //--------------------------------------------------
         // For debug purposes
 
-        private static bool _soundOn = false;
+        private static bool _soundOn = true;
 
         //----------------------//------------------------//
 
         public static void Initialize()
         {
+            _contentManager = new ContentManager(SceneManager.Instance.Content.ServiceProvider, "Content");
+
+            _seCache = new Dictionary<string, SoundEffect>();
             _cancelSe = LoadSe("Cancel");
             _confirmSe = LoadSe("Confirm");
             _selectSe = LoadSe("Cursor");

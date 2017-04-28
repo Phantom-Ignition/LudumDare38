@@ -127,7 +127,7 @@ namespace LudumDare38.Managers
         {
             this.Content = new ContentManager(Content.ServiceProvider, "Content");
             var transitionTexture = new Texture2D(GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
-            transitionTexture.SetData<Color>(new Color[] { Color.Black });
+            transitionTexture.SetData(new Color[] { Color.Black });
             _transitionImage = new Sprite(transitionTexture);
             _transitionImage.Scale = new Vector2(VirtualSize.X, VirtualSize.Y);
             _transitionImage.Alpha = 0.0f;
