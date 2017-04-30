@@ -1,4 +1,4 @@
-# Tiny Planet Defense
+# [Tiny Planet Defense](https://ldjam.com/events/ludum-dare/38/tiny-planet-defense-1/)
 
 ![3.png](https://static.jam.vg/raw/98e/3/z/22ba.png)
 
@@ -12,7 +12,8 @@ TPD is a tower defense game, where you place weapons around the orbit of your pl
 * X - Cancel
 
 # Links
-* Download link: https://github.com/Phantom-Ignition/LudumDare38/releases/download/v1.0.0/Tiny.Planet.Defense.rar
+* Ludum Dare Page: https://ldjam.com/events/ludum-dare/38/tiny-planet-defense-1/
+* Download link: https://github.com/Phantom-Ignition/LudumDare38/releases/download/v1.0.1/Tiny.Planet.Defense.v1.0.1.rar
 * Twitter: https://twitter.com/phantomignition
 
 # Credits
